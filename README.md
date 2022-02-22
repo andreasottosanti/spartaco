@@ -37,6 +37,11 @@ The estimation algorithm is automatically run using random starting points. Howe
 output1 <- spartaco(x = x, coordinates = coordinates, K = K, R = R, max.iter = 100)
 output2 <- spartaco(x = x, coordinates = coordinates, max.iter = 100, input.values = output1)
 ```
+The constraint on the sum of 
+``` math math
+c = \tau_{kr}+\xi_{kr}
+```
+can be set through the argument `traceDelta` (default is 10).
 
 ## Convergence
 
