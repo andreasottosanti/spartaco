@@ -20,7 +20,7 @@ Install the development version from
 BiocManager::install("andreasottosanti/spartaco")
 ```
 
-### Run the model
+## Run the model
 
 Let `x` be the spatial experiment matrix containing the expression of `nrow(x)` genes measured over `ncol(x)` spots. The spatial coordinates of the spots are contained into the matrix `coordinates`. You can run SpaRTaCo searching for `K` clusters of genes and `R` clusters of spots by running the following code:
 
@@ -29,13 +29,13 @@ library(spartaco)
 spartaco(x = x, coordinates = coordinates, K = K, R = R) 
 ```
 
-### Convergence
-SpaRTaCo can be either run for a fixed number of iterations, without being stopped, or stopped after a certain convergence criterion is reached. If the convergence criterion (`conv.criterion`) is `NULL`, the estimation algorithm is run for `max.iter` iterations, otherwise it is stopped when the increment of the log-likelihood is smaller than a certain threshold `conv.criterion$epsilon` for `conv.criterion$iterations` times in a row. 
-
 ### Starting points
 The estimation algorithm is automatically run using random starting points. However, it is also possible to start from a previous output of the `spartaco` function:
 
-```r 
+``` r 
 output1 <- spartaco(x = x, coordinates = coordinates, K = K, R = R, max.iter = 100)
 output2 <- spartaco(x = x, coordinates = coordinates, K = K, R = R, max.iter = 100, input.values = output1)
 ```
+
+### Convergence
+By default, the estimation procedure is run for a fixed number of iterations (`max.iter`) and stopped after a certain convergence criterion is reached (`conv.criterion`). If `conv.criterion = NULL`, the estimation algorithm is run for `max.iter` iterations, otherwise it is stopped when the increment of the log-likelihood is smaller than a certain threshold `conv.criterion$epsilon` for `conv.criterion$iterations` times in a row. 
