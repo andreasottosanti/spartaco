@@ -3,14 +3,14 @@ Title: Co-Clustering of Spatial Transcriptomics Data
 Version: 0.99.0
 Date: 2021-04-12
 Authors@R: 
-    c(person(given = "Dario",
-           family = "Righelli",
-           role = c("aut", "cre"),
-           email = "dario.righelli@gmail.com"),
-      person(given = "Andrea",
+    c(person(given = "Andrea",
            family = "Sottosanti",
            role = "aut",
            email = "andrea.sottosanti@unipd.it"),
+      person(given = "Dario",
+           family = "Righelli",
+           role = c("aut", "cre"),
+           email = "dario.righelli@gmail.com"),
       person(given = "Davide",
            family = "Risso",
            role = "aut",
@@ -29,4 +29,4 @@ biocViews: Software
 Encoding: UTF-8
 LazyData: true
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.1.1
+RoxygenNote: 7.1.2

@@ -4,13 +4,60 @@
 \alias{spartaco}
 \title{Spartaco co-clustering}
 \usage{
-spartaco(x, coordinates, K = 2, R = 4)
+spartaco(
+  x,
+  coordinates,
+  K = NULL,
+  R = NULL,
+  Delta.constr = 10,
+  max.iter = 1000,
+  metropolis.iterations = 150,
+  estimate.iterations = 10,
+  sampling.m = "standard",
+  prob.m = c(0.7, 0.2, 0.1),
+  input.values = NULL,
+  conv.criterion = list(iterations = 10, epsilon = 1e-04),
+  verbose = FALSE,
+  seed = NULL
+)
+}
+\arguments{
+\item{x}{the input data matrix.}
+
+\item{coordinates}{the matrix of spatial coordinates of dimension ncol(x) X 2.}
+
+\item{K}{the number of row clusters (when \code{input.values = NULL}).}
+
+\item{R}{the number of column clusters (when \code{input.values = NULL}).}
+
+\item{Delta.constr}{the constraint on the Delta matrix (default is 10; see Details).}
+
+\item{max.iter}{the maximum number of iterations the estimation algorithm is run.}
+
+\item{metropolis.iterations}{the number of iterations within each SE Step.}
+
+\item{estimate.iterations}{the maximum number of iterations within each M Step.}
+
+\item{sampling.m}{the method used for selecting \emph{m}, the number of elements that the SE Step attempts to change in a single iteration (see Details).}
+
+\item{prob.m}{the vector of probabilities used to sample \emph{m} when \code{sampling.m = "standard"}.}
+
+\item{input.values}{the starting points of the estimation process (see Details). If passed, the values of \code{K} and \code{R} are taken from it. The output of a previous model estimation can be passed here.}
+
+\item{conv.criterion}{a list containing the parameters that define a converge criterion (see Details).}
+
+\item{verbose}{if \code{TRUE}, it displays the on-going estimation process.}
+
+\item{seed}{set the interval seed of the function.}
 }
 \description{
-This function will return the estimated parameters and the co-clustering labels.
+This function will return the estimated parameters and the co-cluster labels.
+}
+\details{
+\code{Delta.constr} gives the quantity $\tau_{kr}$
 }
 \examples{
 library(SpatialExperiment)
 example(SpatialExperiment)
-spartaco(se)
+# spartaco(se)
 }
