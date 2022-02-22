@@ -45,6 +45,6 @@ By default, the estimation procedure is run for a fixed number of iterations (`m
 ## Select *m* within the **SE Step**
 
 There are two options for selecting *m*, the number of elements that the **SE Step** attempts to change in a single iteration.
-    - by selecting `sampling.m = "standard"`, it will draw *m* according to the probability vector `prob.m`.
-    - by selecting `sampling.m = "adaptive"`, it will draw *m = 1+p*, where *p* is a realization from a Poisson distribution with mean *1/t+1/2*, and *t* is the iteration of the estimation algorithm.
+* by selecting `sampling.m = "standard"`, it draws *m* according to the probability vector `prob.m`.
+* by selecting `sampling.m = "adaptive"`, it takes *m = 1+p*, where *p* is a realization from a Poisson distribution with mean *1/t+1/2*, and *t* is the iteration of the estimation algorithm.
 
