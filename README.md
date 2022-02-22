@@ -22,31 +22,17 @@ BiocManager::install("andreasottosanti/spartaco")
 
 ## Run the model
 
-Let `x` be the spatial experiment matrix containing the expression of `nrow(x)` genes measured over `ncol(x)` spots. The spatial coordinates of the spots are contained into the matrix `coordinates`. Let assume we want to find $K$ clusters of genes and $R$ clusters of spots. You can run SpaRTaCo with the following code:
+Let `x` be the spatial experiment matrix containing the expression of `nrow(x)` genes measured over `ncol(x)` spots. The spatial coordinates of the spots are contained into the matrix `coordinates`. You can run SpaRTaCo searching for `K` clusters of genes and `R` clusters of spots by running the following code:
 
 ``` r
 library(spartaco)
 spartaco(x = x, coordinates = coordinates, K = K, R = R) 
 ```
 
-The model can be run also from pre-defined starting points. They can be set as follows:
-
-```r
-input.values <- list(
-        phi = rep(1,K),
-        mu = matrix(0,K,R),
-        tau = matrix(0,K,R),
-        alpha = matrix(1,K,R),
-        beta = matrix(1,K,R),
-        Cs = sample(1:K, nrow(x), replace = T),
-        Ds = sample(1:R, ncol(x), replace = T),
-    )
-spartaco(x = x, coordinates = coordinates, K = K, R = R, input.values = input.values)     
-```
-
-The estimation can be run also starting from a previous output.
+### Starting points
+The estimation algorithm is automatically run using random starting points. However, it is also possible to start from a previous output of the `spartaco` function:
 
 ```r 
-res <- spartaco(x = x, coordinates = coordinates, K = K, R = R, max.iter = 10^3)
-res2 <- spartaco(x = x, coordinates = coordinates, K = K, R = R, max.iter = 10^3, input.values = res)
+output1 <- spartaco(x = x, coordinates = coordinates, K = K, R = R, max.iter = 10^3)
+output2 <- spartaco(x = x, coordinates = coordinates, K = K, R = R, max.iter = 10^3, input.values = output1)
 ```
