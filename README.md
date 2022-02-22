@@ -38,10 +38,10 @@ output1 <- spartaco(x = x, coordinates = coordinates, K = K, R = R, max.iter = 1
 output2 <- spartaco(x = x, coordinates = coordinates, max.iter = 100, input.values = output1)
 ```
 The constraint on the sum of 
-``` math math
+``` math 
 c = \tau_{kr}+\xi_{kr}
 ```
-can be set through the argument `traceDelta` (default is 10).
+can be set through the argument `Delta.constr` (default is 10).
 
 ## Convergence
 
