@@ -99,6 +99,8 @@ Estimate.Cocluster.Parameters.marginal.constraint.trace <- function(x,
                 alpha = Alpha[i],
                 beta = Beta[i],
                 tau = Tau[i],
-                xi = cur.xi))
+                xi = cur.xi,
+                logL = logL[i]))
 }
+
 
