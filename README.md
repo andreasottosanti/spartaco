@@ -1,7 +1,7 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-# SPAtially Resolved TrAnscriptomics CO-clustering (SpaRTaCo)
+# **SPA**tially **R**esolved **T**r**A**nscriptomics **CO**-clustering (SpaRTaCo)
 
 by A. Sottosanti, D. Righelli and D. Risso
 
