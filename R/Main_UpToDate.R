@@ -1,7 +1,7 @@
 main <- function(x, Dist,
                  K,
                  R,
-                 traceRatio = 10,
+                 Delta.constr = 10,
                  max.iter = 10^3,
                  metropolis.iterations = 150,
                  estimate.iterations = 10,
@@ -15,8 +15,8 @@ main <- function(x, Dist,
         cur.Ds <- best.Cs <- sample(1:R, size = ncol(x), replace = T)
         cur.phi <- best.phi <- runif(R, 1, 5)
         cur.mu <- best.mu <- matrix(runif(K*R, 1, 10), K, R)
-        cur.tau <- best.tau <- matrix(runif(K * R, 1e-7, traceRatio), K, R)
-        cur.xi <- best.xi <- traceRatio - best.tau
+        cur.tau <- best.tau <- matrix(runif(K * R, 1e-7, Delta.constr), K, R)
+        cur.xi <- best.xi <- Delta.constr - best.tau
         cur.alpha <- best.alpha <- matrix(runif(K*R, 1, 3), K, R)
         cur.beta <- best.beta <- matrix(runif(K*R, 1, 3), K, R)} else {
             cur.Cs <- best.Cs <- input.values$Cs
@@ -24,7 +24,7 @@ main <- function(x, Dist,
             cur.phi <- best.phi <- input.values$phi
             cur.mu <- best.mu <- input.values$mu
             cur.tau <- best.tau <- input.values$tau
-            cur.xi <- best.xi <- traceRatio - best.tau
+            cur.xi <- best.xi <- Delta.constr - best.tau
             cur.alpha <- best.alpha <- input.values$alpha
             cur.beta <- best.beta <- input.values$beta}
     Cs <- matrix(0, nrow(x), max.iter)
@@ -53,7 +53,7 @@ main <- function(x, Dist,
         goodK <- sort(unique(cur.Cs))
         goodR <- sort(unique(cur.Ds))
         sapply(goodR, function(r){
-            traceDelta_r <- traceRatio * sum(cur.Ds == r)
+            traceDelta_r <- Delta.constr * sum(cur.Ds == r)
             sapply(goodK, function(k){
                 estimation.parameters <- Estimate.Cocluster.Parameters.marginal.constraint.trace(x = x[cur.Cs == k, cur.Ds == r],
                                                                                                  traceDelta = traceDelta_r,
@@ -123,7 +123,7 @@ main <- function(x, Dist,
         goodK <- sort(unique(cur.Cs))
         goodR <- sort(unique(cur.Ds))
         sapply(goodR, function(r){
-            traceDelta_r <- traceRatio * sum(cur.Ds == r)
+            traceDelta_r <- Delta.constr * sum(cur.Ds == r)
             sapply(goodK, function(k){
                 estimation.parameters <- Estimate.Cocluster.Parameters.marginal.constraint.trace(x = x[cur.Cs == k, cur.Ds == r],
                                                                                                  traceDelta = traceDelta_r,
