@@ -11,8 +11,8 @@
 #' # spartaco(se)
 spartaco <- function(x,
                      coordinates,
-                     K = 2,
-                     R = 4,
+                     K = NULL,
+                     R = NULL,
                      traceRatio = 10,
                      max.iter = 1000,
                      metropolis.iterations = 150,
@@ -27,6 +27,11 @@ spartaco <- function(x,
 
     set.seed(seed = seed)
     Dist <- as.matrix(stats::dist(coordinates))
+
+    if(!is.null(input.values)){
+        K <- nrow(input.values$mu)
+        R <- ncol(input.values$mu)
+    }
 
     main(x = x,
          Dist = Dist,
