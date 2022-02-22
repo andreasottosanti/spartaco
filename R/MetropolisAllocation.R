@@ -2,9 +2,10 @@ MetropolisAllocation <- function(x, Cs, Ds,
                                  Uglob, # list of matrices of length R, contains the matrices of eigenvec
                                  Dglob, # vector of length p, contains the eigenval
                                  Dist,
-                                 Mu, Tau, Xi, Alpha, Beta, Phi, maxit = 10, min.obs = 3, prob.choices = c(1/2,1/2), print.info = F){
-    if(length(prob.choices) != 2) stop("Wrong probabilities input")
-    if(is.null(prob.choices)) prob.choices <- rep(1/3,3)
+                                 Mu, Tau, Xi, Alpha, Beta, Phi, maxit = 10, min.obs = 3,
+                                 sampling.m = "adaptive",
+                                 rate.m = NULL,
+                                 prob.m = c(.7, .2, .1)){
     K <- ifelse(is.vector(Mu), 1, nrow(Mu))
     R <- length(Phi)
     if(is.vector(Mu)) Mu <- matrix(Mu, K, R)
@@ -19,18 +20,17 @@ MetropolisAllocation <- function(x, Cs, Ds,
     logL.values <- matrix(0,K,R)
     goodK <- sort(unique(Cs))
     goodR <- sort(unique(Ds))
-    for(r in goodR){
-        for(k in goodK){
-            logL.values[k,r] <- logL.Cocluster(x = x[Cs == k, Ds == r], Mu = Mu[k,r], Tau = Tau[k,r], Xi = Xi[k,r], Alpha = Alpha[k,r],
+    sapply(goodR, function(r){
+        sapply(goodK, function(k){
+            logL.values[k,r] <<- logL.Cocluster(x = x[Cs == k, Ds == r], Mu = Mu[k,r], Tau = Tau[k,r], Xi = Xi[k,r], Alpha = Alpha[k,r],
                                                Beta = Beta[k,r], U = Uglob[[r]], d = Dglob[Ds == r])
-        }
-    }
+        })
+    })
     logL.den <- sum(logL.values)
     for(iter in 1:maxit){
-        m <- m.list[iter] <- sample(1:3,1, prob = c(.7,.2,.1))#sample(1:4, 1, prob = c(.4, .3, .2, .1))
-        move <- sample(c("sasd","mamd"), size = 1, prob = prob.choices)
-        if(move == "sasd"){
-            if(print.info) cat(paste("Trying sasd with",m,"moves\n"))
+        m <- m.list[iter] <- ifelse(sampling.m == "adaptive", 1+rpois(1, rate.m), sample(1:length(prob.m),1, prob = prob.m))
+        move <- sample(c("M1","M2"), size = 1)
+        if(move == "M1"){
             gr.start <- sample(1:length(D), 1)
             gr.end <- sample(setdiff(1:length(D), gr.start), 1)
             j <- sample(1:D[gr.start], m, replace = F)
@@ -40,17 +40,17 @@ MetropolisAllocation <- function(x, Cs, Ds,
             logL.values.star <- logL.values
             Uglob.star <- Uglob
             Dglob.star <- Dglob
-            for(r in to.be.changed){
+            sapply(to.be.changed, function(r){
                 eigK <- eigen(exp(-Dist[Ds.star == r, Ds.star == r]/Phi[r]))
-                Uglob.star[[r]] <- eigK$vec
-                Dglob.star[Ds.star == r] <- eigK$val
-                for(k in goodK){
-                    logL.values.star[k,r] <- logL.Cocluster(x = x[Cs == k, Ds.star == r], Mu = Mu[k,r], Tau = Tau[k,r], Xi = Xi[k,r], Alpha = Alpha[k,r],
+                Uglob.star[[r]] <<- eigK$vec
+                Dglob.star[Ds.star == r] <<- eigK$val
+                sapply(goodK, function(k){
+                    logL.values.star[k,r] <<- logL.Cocluster(x = x[Cs == k, Ds.star == r], Mu = Mu[k,r], Tau = Tau[k,r], Xi = Xi[k,r], Alpha = Alpha[k,r],
                                                             Beta = Beta[k,r], U = Uglob.star[[r]], d = Dglob.star[Ds.star == r])
-                }
-            }
+                })
+            })
             log.proposal.num <- sum(log(D[gr.start]-0:(m-1)))
-            log.proposal.den <- sum(log(D[gr.end]-1:m))
+            log.proposal.den <- sum(log(D[gr.end]+1:m))
             logL.num <- sum(logL.values.star)
             A <- exp(logL.num + log.proposal.num - logL.den - log.proposal.den)*all(as.vector(table(Ds.star)) >= min.obs)
             if(runif(1) <= A){
@@ -62,8 +62,7 @@ MetropolisAllocation <- function(x, Cs, Ds,
                 Dglob <- Dglob.star
                 accepted[iter] <- 1}
         }
-        if(move == "mamd"){
-            if(print.info) cat(paste("Trying mamd with",m,"moves\n"))
+        if(move == "M2"){
             gr.start <- sample(1:R, m, replace = T)
             gr.end <- sapply(1:m, function(k) sample(setdiff(1:R, gr.start[k]), 1))
             q1r <- sapply(1:R, function(r) sum(gr.start == r))
@@ -75,15 +74,15 @@ MetropolisAllocation <- function(x, Cs, Ds,
             logL.values.star <- logL.values
             Uglob.star <- Uglob
             Dglob.star <- Dglob
-            for(r in to.be.changed){
+            sapply(to.be.changed, function(r){
                 eigK <- eigen(exp(-Dist[Ds.star == r, Ds.star == r]/Phi[r]))
-                Uglob.star[[r]] <- eigK$vec
-                Dglob.star[Ds.star == r] <- eigK$val
-                for(k in goodK){
-                    logL.values.star[k,r] <- logL.Cocluster(x = x[Cs == k, Ds.star == r], Mu = Mu[k,r], Tau = Tau[k,r], Xi = Xi[k,r], Alpha = Alpha[k,r],
+                Uglob.star[[r]] <<- eigK$vec
+                Dglob.star[Ds.star == r] <<- eigK$val
+                sapply(goodK, function(k){
+                    logL.values.star[k,r] <<- logL.Cocluster(x = x[Cs == k, Ds.star == r], Mu = Mu[k,r], Tau = Tau[k,r], Xi = Xi[k,r], Alpha = Alpha[k,r],
                                                             Beta = Beta[k,r], U = Uglob.star[[r]], d = Dglob.star[Ds.star == r])
-                }
-            }
+                })
+            })
             log.proposal.num <- sum(log(factorial(q2r)))+sum(sapply(which(q1r != 0), function(r) sum(log(D[r]+0:(q1r[r]-1)))))
             log.proposal.den <- sum(log(factorial(q1r)))+sum(sapply(which(q2r != 0), function(r) sum(log(D[r]-q1r[r]+1:q2r[r]))))
             logL.num <- sum(logL.values.star)

@@ -17,19 +17,27 @@ spartaco <- function(x,
                      max.iter = 1000,
                      metropolis.iterations = 150,
                      estimate.iterations = 10,
+                     sampling.m = "standard",
+                     prob.m = c(.7, .2, .1),
                      input.values = NULL,
-                     verbose = FALSE
+                     verbose = FALSE,
+                     conv.criterion = list(iterations = 10, epsilon = 1e-4),
+                     seed = NULL
                      ) {
 
+    set.seed(seed = seed)
     Dist <- as.matrix(stats::dist(coordinates))
 
-    main(x = x, 
+    main(x = x,
          Dist = Dist,
-         K = K, R = K, 
+         K = K, R = K,
          traceRatio = traceRatio,
          max.iter = max.iter,
          metropolis.iterations = metropolis.iterations,
          estimate.iterations = estimate.iterations,
+         sampling.m = sampling.m,
+         prob.m = prob.m,
+         conv.criterion = conv.criterion,
          input.values = input.values,
          verbose = verbose)
 }
