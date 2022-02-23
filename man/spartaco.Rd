@@ -2,7 +2,7 @@
 % Please edit documentation in R/spartaco.R
 \name{spartaco}
 \alias{spartaco}
-\title{Spartaco co-clustering}
+\title{SpaRTaCo co-clustering}
 \usage{
 spartaco(
   x,

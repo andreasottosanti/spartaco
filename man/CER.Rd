@@ -16,5 +16,5 @@ The function returns the CER. The closer is the value to 0,
 the better is the estimated classification with respect to the reference one.
 }
 \description{
-This function returns the classification error rate (CER) as a measure of the discrepancy between the estimated and the reference classification.
+This function returns the classification error rate (CER) as a measure of the discrepancy between the reference and the estimated classifications.
 }
