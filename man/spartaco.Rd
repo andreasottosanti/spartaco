@@ -12,7 +12,7 @@ spartaco(
   Delta.constr = 10,
   max.iter = 1000,
   metropolis.iterations = 150,
-  estimate.iterations = 10,
+  estimate.iterations = 100,
   sampling.m = "standard",
   prob.m = c(0.7, 0.2, 0.1),
   input.values = NULL,
@@ -24,13 +24,13 @@ spartaco(
 \arguments{
 \item{x}{the input data matrix.}
 
-\item{coordinates}{the matrix of spatial coordinates of dimension ncol(x) X 2.}
+\item{coordinates}{the matrix of spatial coordinates of dimension ncol(x) x 2.}
 
 \item{K}{the number of row clusters (when \code{input.values = NULL}).}
 
 \item{R}{the number of column clusters (when \code{input.values = NULL}).}
 
-\item{Delta.constr}{the constraint on the Delta matrix (default is 10; see Details).}
+\item{Delta.constr}{the constraint on the Delta matrix (default is 10; see \strong{Details}).}
 
 \item{max.iter}{the maximum number of iterations the estimation algorithm is run.}
 
@@ -38,26 +38,51 @@ spartaco(
 
 \item{estimate.iterations}{the maximum number of iterations within each M Step.}
 
-\item{sampling.m}{the method used for selecting \emph{m}, the number of elements that the SE Step attempts to change in a single iteration (see Details).}
+\item{sampling.m}{the method used for selecting \emph{m}, the number of elements that the SE Step attempts to change in a single iteration (see \strong{Details}).}
 
 \item{prob.m}{the vector of probabilities used to sample \emph{m} when \code{sampling.m = "standard"}.}
 
-\item{input.values}{the starting points of the estimation process (see Details). If passed, the values of \code{K} and \code{R} are taken from it. The output of a previous model estimation can be passed here.}
+\item{input.values}{the starting points of the estimation process (see \strong{Details}). If passed, the values of \code{K} and \code{R} are taken from it. The output of a previous model estimation can be passed here.}
 
-\item{conv.criterion}{a list containing the parameters that define a converge criterion (see Details).}
+\item{conv.criterion}{a list containing the parameters that define a converge criterion (see \strong{Details}).}
 
 \item{verbose}{if \code{TRUE}, it displays the on-going estimation process.}
 
 \item{seed}{set the interval seed of the function.}
 }
+\value{
+The function returns a list with the parameter estimates, the clustering labels, the log-likelihood value at each iteration and the data.
+}
 \description{
-This function will return the estimated parameters and the co-cluster labels.
+This function returns the estimated model parameters and the co-clustering labels.
 }
 \details{
-\code{Delta.constr} gives the quantity $\tau_{kr}$
+\code{Delta.constr} gives the quantity \deqn{c = \tau_kr + \xi_kr,} where \eqn{\tau_kr} and \eqn{\xi_kr} are the spatial variance and the nugget effect of block \eqn{(k,r)}.
+
+The are two methods for selecting \emph{m}, the number of items the SE Step attempts to change in a single iteration.
+If \code{sampling.m = "standard"}, then \code{m = sample(1:length(prob.m), 1, F, prob.m)}.
+If \code{sampling.m = "adaptive"}, then \code{m = 1 + rpois(1, 1/t+1/2)}, where \code{t} denotes the t-th iteration of the estimation algorithm.
+
+The algorithm can be initiated from a given set of starting values. To do so, \code{input.values} receives a list of the form
+\code{list(mu, tau, xi, alpha, beta, phi, Cs, Ds)}, where:
+\itemize{
+\item \code{mu}, \code{tau}, \code{xi}, \code{alpha} and \code{beta} are \code{K} x \code{R} matrices;
+\item \code{phi} is a vector of length \code{R};
+\item \code{Cs} is a vector of length \code{nrow(x)} containing the row clustering labels;
+\item \code{Ds} is a vector of length \code{ncol(x)} containing the column clustering labels.
+}
+
+If the algorithm is initiated from some starting values, it is no longer necessary to set \code{K} and \code{R}, as they are automatically taken from here.
+By passing to \code{input.values} an output of the \code{spartaco} function, the algorithm starts the estimation from the arrival points of the previous run (see \strong{Examples}).
+
+If \code{conv.criterion = NULL}, the algorithm is stopped after \code{max.iter} itereations, otherwise it is stopped when the increment of the log-likelihood is smaller than a certain threshold \code{conv.criterion$epsilon} for \code{conv.criterion$iterations} times in a row.
 }
 \examples{
-library(SpatialExperiment)
-example(SpatialExperiment)
-# spartaco(se)
+library(spartaco)
+x <- matrix(runif(n*p), n, p)
+coordinates <- matrix(runif(2*p), p, 2)
+output <- spartaco(x = x, coordinates = coordinates, K = K, R = R)
+
+# To start the algorithm from the output of a previous run
+output2 <- spartaco(x = x, coordinates = coordinates, input.val = output)
 }

@@ -1,4 +1,4 @@
-main <- function(x, Dist,
+main <- function(x, coordinates,
                  K,
                  R,
                  Delta.constr = 10,
@@ -10,6 +10,7 @@ main <- function(x, Dist,
                  conv.criterion = conv.criterion,
                  input.values = NULL,
                  verbose = F){
+    Dist <- as.matrix(stats::dist(coordinates))
     if(is.null(input.values)){
         cur.Cs <- best.Ds <- sample(1:K, size = nrow(x), replace = T)
         cur.Ds <- best.Cs <- sample(1:R, size = ncol(x), replace = T)
@@ -205,17 +206,18 @@ main <- function(x, Dist,
         }
     }
     return(list(
-        phi = best.phi,
         mu = best.mu,
         tau = best.tau,
         xi = best.xi,
         alpha = best.alpha,
         beta = best.beta,
+        phi = best.phi,
         Cs = best.Cs,
         Ds = best.Ds,
-        CS = Cs,
-        DS = Ds,
-        logL = ll,
-        x = x
+        #CS = Cs,
+        #DS = Ds,
+        logL = ll[-1],
+        x = x,
+        coordinates = coordinates
     ))
 }
