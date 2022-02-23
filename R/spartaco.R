@@ -1,4 +1,4 @@
-#' Spartaco co-clustering
+#' SpaRTaCo co-clustering
 #'
 #' This function returns the estimated model parameters and the co-clustering labels.
 #'

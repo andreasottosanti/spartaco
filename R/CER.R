@@ -1,6 +1,6 @@
 #' Classification Error Rate (CER)
 #'
-#' This function returns the classification error rate (CER) as a measure of the discrepancy between the estimated and the reference classification.
+#' This function returns the classification error rate (CER) as a measure of the discrepancy between the reference and the estimated classifications.
 #'
 #' @export
 #'
