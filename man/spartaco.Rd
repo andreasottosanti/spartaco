@@ -86,3 +86,6 @@ output <- spartaco(x = x, coordinates = coordinates, K = K, R = R)
 # To start the algorithm from the output of a previous run
 output2 <- spartaco(x = x, coordinates = coordinates, input.val = output)
 }
+\references{
+Sottosanti, A. and Risso, D. (2021) Co-clustering of Spatially Resolved Transcriptomic Data \href{https://arxiv.org/abs/2110.04872}{(preprint)}
+}
