@@ -51,7 +51,7 @@ spartaco(
 \item{seed}{set the interval seed of the function.}
 }
 \value{
-The function returns a list with the parameter estimates, the clustering labels, the log-likelihood value at each iteration and the data.
+The function returns a list with the parameter estimates, the clustering labels, the log-likelihood value at each iteration and the data, the ICL index, the data matrix and the coordinates matrix.
 }
 \description{
 This function returns the estimated model parameters and the co-clustering labels.

@@ -21,7 +21,7 @@
 #' @param seed set the interval seed of the function.
 #'
 #'
-#' @return The function returns a list with the parameter estimates, the clustering labels, the log-likelihood value at each iteration and the data.
+#' @return The function returns a list with the parameter estimates, the clustering labels, the log-likelihood value at each iteration and the data, the ICL index, the data matrix and the coordinates matrix.
 
 #'
 #' @details `Delta.constr` gives the quantity \deqn{c = \tau_kr + \xi_kr,} where \eqn{\tau_kr} and \eqn{\xi_kr} are the spatial variance and the nugget effect of block \eqn{(k,r)}.

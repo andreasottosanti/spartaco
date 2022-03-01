@@ -205,6 +205,8 @@ main <- function(x, coordinates,
             }
         }
     }
+
+    ICL <- max(ll) - nrow(x)*K - ncol(x)*R - .5*(4*K*R+R)*log(nrow(x) * ncol(x))
     return(list(
         mu = best.mu,
         tau = best.tau,
@@ -216,7 +218,8 @@ main <- function(x, coordinates,
         Ds = best.Ds,
         #CS = Cs,
         #DS = Ds,
-        logL = ll[-1],
+        logL = ll[c(2:i)],
+        ICL = ICL,
         x = x,
         coordinates = coordinates
     ))
