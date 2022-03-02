@@ -15,9 +15,9 @@ GeneVariances(
 
 \item{gene.names}{A vector of length \code{nrow(results$x)}, containing the names of the genes. If \code{NULL}, the function takes \code{gene.names = row.names(results$x)}.}
 
-\item{HPD.interval}{A list containing the options for computing the random parameters high posterior density intervals of level \code{HPD.interval$level} (default \code{0.95}).
-The intervals are computed numerically via MCMC; the number of draws used to compute the intervals is given by \code{HPD.interval$level} (default is \code{10^4}).
-If \code{NULL}, the intervals are not computed.}
+\item{HPD.interval}{A list containing the options for computing the random parameters high posterior density intervals. The  level is given by \code{HPD.interval$level} (default \code{0.95}).
+The intervals are computed numerically via MCMC; the number of draws used for the simulation can be set with \code{HPD.interval$level} (default is \code{10^4}).
+If \code{HPD.interval = NULL}, the intervals are not computed.}
 }
 \value{
 A list of five elements:
@@ -26,7 +26,7 @@ A list of five elements:
 \item \code{Variance}: a data frame of dimension \code{nrow(results$x)} x \code{R} containing the variance of the random effects within the \code{R} spot clusters;
 \item \code{HPD.left}: a data frame of dimension \code{nrow(results$x)} x \code{R} containing the left HPD interval of the random effects within the \code{R} spot clusters (only if \code{!is.null(HPD.interval)});
 \item \code{HPD.right} a data frame of dimension \code{nrow(results$x)} x \code{R} containing the right HPD interval of the random effects within the \code{R} spot clusters (only if \code{!is.null(HPD.interval)});
-\item \code{Cs}: the row clustering labels (they are the same contained into \code{results$Cs}).
+\item \code{Cs}: the row clustering labels (they are the same passed as input into \code{results$Cs}).
 }
 
 More details on how to access the random parameter estimates are given in the Examples.

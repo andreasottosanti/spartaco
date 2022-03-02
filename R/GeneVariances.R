@@ -9,16 +9,16 @@
 #'
 #' @param results The output of a `spartaco` function;
 #' @param gene.names A vector of length `nrow(results$x)`, containing the names of the genes. If `NULL`, the function takes `gene.names = row.names(results$x)`.
-#' @param HPD.interval A list containing the options for computing the random parameters high posterior density intervals of level `HPD.interval$level` (default `0.95`).
-#' The intervals are computed numerically via MCMC; the number of draws used to compute the intervals is given by `HPD.interval$level` (default is `10^4`).
-#' If `NULL`, the intervals are not computed.
+#' @param HPD.interval A list containing the options for computing the random parameters high posterior density intervals. The  level is given by `HPD.interval$level` (default `0.95`).
+#' The intervals are computed numerically via MCMC; the number of draws used for the simulation can be set with `HPD.interval$level` (default is `10^4`).
+#' If `HPD.interval = NULL`, the intervals are not computed.
 #'
 #' @return A list of five elements:
 #' - `Expectation`: a data frame of dimension `nrow(results$x)` x `R` containing the expected values of the random effects within the `R` spot clusters;
 #' - `Variance`: a data frame of dimension `nrow(results$x)` x `R` containing the variance of the random effects within the `R` spot clusters;
 #' - `HPD.left`: a data frame of dimension `nrow(results$x)` x `R` containing the left HPD interval of the random effects within the `R` spot clusters (only if `!is.null(HPD.interval)`);
 #' - `HPD.right` a data frame of dimension `nrow(results$x)` x `R` containing the right HPD interval of the random effects within the `R` spot clusters (only if `!is.null(HPD.interval)`);
-#' - `Cs`: the row clustering labels (they are the same contained into `results$Cs`).
+#' - `Cs`: the row clustering labels (they are the same passed as input into `results$Cs`).
 #'
 #' More details on how to access the random parameter estimates are given in the Examples.
 #'
