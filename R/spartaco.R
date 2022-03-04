@@ -80,7 +80,7 @@ spartaco <- function(x,
 
     main(x = x,
          coordinates = coordinates,
-         K = K, R = K,
+         K = K, R = R,
          Delta.constr = Delta.constr,
          max.iter = max.iter,
          metropolis.iterations = metropolis.iterations,
