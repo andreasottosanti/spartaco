@@ -67,7 +67,7 @@ spartaco <- function(x,
                      prob.m = c(.7, .2, .1),
                      input.values = NULL,
                      conv.criterion = list(iterations = 10, epsilon = 1e-4),
-                     verbose = FALSE,
+                     verbose = TRUE,
                      seed = NULL
                      ) {
 
