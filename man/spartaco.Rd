@@ -17,7 +17,7 @@ spartaco(
   prob.m = c(0.7, 0.2, 0.1),
   input.values = NULL,
   conv.criterion = list(iterations = 10, epsilon = 1e-04),
-  verbose = FALSE,
+  verbose = TRUE,
   seed = NULL
 )
 }
