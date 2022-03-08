@@ -16,7 +16,7 @@ change.point.model <- function(y, x, nstart = 10, plot.fit = F){
 
         min.value <- matrix(0, length(x), 4)
         for(k in 1:length(x)){
-            opt <- optim(runif(3,0,10), fn = least.square.f, x = 1:length(x), y = y, x0 = x[k])
+            opt <- optim(c(mean(y), runif(1,0,10), mean(y)), fn = least.square.f, x = 1:length(x), y = y, x0 = x[k])
             min.value[k,1] <- opt$val
             min.value[k,-1] <- opt$par
         }

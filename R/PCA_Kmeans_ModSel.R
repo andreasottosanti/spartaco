@@ -19,19 +19,19 @@ PCA.Kmeans.KR <- function(x, K.range, R.range){
 
     wssq.rows <- numeric(length(K.range))
     for(k in 1:length(K.range)){
-        km.rows.k <- kmeans(x = pc.row, centers = K.range[k], nstart = 20)
+        km.rows.k <- kmeans(x = pc.row, centers = K.range[k], nstart = 20, iter.max = 100)
         wssq.rows[k] <- km.rows.k$tot.withinss
     }
     K.sel <- change.point.model(y = wssq.rows, x = K.range, nstart = 20, plot.fit = T)
-    row.cluster <- kmeans(x = pc.row, centers = K.sel, nstart = 20)$cluster
+    row.cluster <- kmeans(x = pc.row, centers = K.sel, nstart = 20, iter.max = 100)$cluster
 
     wssq.cols <- numeric(length(R.range))
     for(r in 1:length(R.range)){
-        km.cols.r <- kmeans(x = pc.col, centers = R.range[r], nstart = 20)
+        km.cols.r <- kmeans(x = pc.col, centers = R.range[r], nstart = 20, iter.max = 100)
         wssq.cols[r] <- km.cols.r$tot.withinss
     }
     R.sel <- change.point.model(y = wssq.cols, x = R.range, nstart = 20, plot.fit = T)
-    col.cluster <- kmeans(x = pc.col, centers = R.sel, nstart = 20)$cluster
+    col.cluster <- kmeans(x = pc.col, centers = R.sel, nstart = 20, iter.max = 100)$cluster
 
     return(list(KR = c(K.sel, R.sel),
                 Cs = row.cluster,
