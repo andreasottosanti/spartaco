@@ -14,7 +14,8 @@ PCA.Kmeans.KR(x, K.range, R.range)
 \item{R.range}{the range of column clusters to evaluate.}
 }
 \value{
-a vector of length 2 containing the values of \code{K} and \code{R} selected.
+A list containing the values of \code{K} and \code{R} selected and the clustering labels with the
+selected dimensions.
 }
 \description{
 This function returns the estimated number of row and column clusters by first applying a PCA on the data,

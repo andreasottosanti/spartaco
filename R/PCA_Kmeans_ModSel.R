@@ -10,7 +10,8 @@
 #' @param K.range the range of row clusters to evaluate;
 #' @param R.range the range of column clusters to evaluate.
 #'
-#' @return a vector of length 2 containing the values of `K` and `R` selected.
+#' @return A list containing the values of `K` and `R` selected and the clustering labels with the
+#' selected dimensions.
 #'
 PCA.Kmeans.KR <- function(x, K.range, R.range){
     change.point.model <- function(y, x, nstart = 10, plot.fit = F){
@@ -55,6 +56,7 @@ PCA.Kmeans.KR <- function(x, K.range, R.range){
         wssq.rows[k] <- km.rows.k$tot.withinss
     }
     K.sel <- change.point.model(y = wssq.rows, x = K.range, nstart = 20, plot.fit = T)
+    row.cluster <- kmeans(x = pc.row$x, centers = K.sel, nstart = 20)$cluster
 
     wssq.cols <- numeric(length(R.range))
     for(r in 1:length(R.range)){
@@ -63,5 +65,9 @@ PCA.Kmeans.KR <- function(x, K.range, R.range){
         wssq.cols[r] <- km.cols.r$tot.withinss
     }
     R.sel <- change.point.model(y = wssq.cols, x = R.range, nstart = 20, plot.fit = T)
-    return(c(K.values, R.values))
+    col.cluster <- kmeans(x = pc.col$x, centers = R.sel, nstart = 20)$cluster
+
+    return(list(KR = c(K.values, R.values),
+                Cs = row.clusters,
+                Ds = col.clusters))
 }
