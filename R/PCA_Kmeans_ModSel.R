@@ -65,7 +65,7 @@ PCA.Kmeans.KR <- function(x, K.range, R.range){
     R.sel <- change.point.model(y = wssq.cols, x = R.range, nstart = 20, plot.fit = T)
     col.cluster <- kmeans(x = pc.col, centers = R.sel, nstart = 20)$cluster
 
-    return(list(KR = c(K.values, R.values),
+    return(list(KR = c(K.sel, R.sel),
                 Cs = row.clusters,
                 Ds = col.clusters))
 }
