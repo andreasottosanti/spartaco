@@ -2,6 +2,7 @@
 
 export(CER)
 export(GeneVariances)
+export(PCA.Kmeans.KR)
 export(spartaco)
 import(SpatialExperiment)
 import(coda)
