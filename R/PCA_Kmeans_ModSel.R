@@ -66,6 +66,6 @@ PCA.Kmeans.KR <- function(x, K.range, R.range){
     col.cluster <- kmeans(x = pc.col, centers = R.sel, nstart = 20)$cluster
 
     return(list(KR = c(K.sel, R.sel),
-                Cs = row.clusters,
-                Ds = col.clusters))
+                Cs = row.cluster,
+                Ds = col.cluster))
 }
