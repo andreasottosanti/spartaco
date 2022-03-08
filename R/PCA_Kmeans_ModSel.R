@@ -46,26 +46,24 @@ PCA.Kmeans.KR <- function(x, K.range, R.range){
     return(values[which.min(values[,2]),1])
     }
 
-    pc.row <- prcomp(x, center = T, retx = T)
-    pc.col <- prcomp(t(x), center = T, retx = T)
+    pc.row <- prcomp(x, center = T, retx = T)$x[,1:2]
+    pc.col <- prcomp(t(x), center = T, retx = T)$x[,1:2]
 
     wssq.rows <- numeric(length(K.range))
     for(k in 1:length(K.range)){
-        print(k)
-        km.rows.k <- kmeans(x = pc.row$x, centers = K.range[k], nstart = 20)
+        km.rows.k <- kmeans(x = pc.row, centers = K.range[k], nstart = 20)
         wssq.rows[k] <- km.rows.k$tot.withinss
     }
     K.sel <- change.point.model(y = wssq.rows, x = K.range, nstart = 20, plot.fit = T)
-    row.cluster <- kmeans(x = pc.row$x, centers = K.sel, nstart = 20)$cluster
+    row.cluster <- kmeans(x = pc.row, centers = K.sel, nstart = 20)$cluster
 
     wssq.cols <- numeric(length(R.range))
     for(r in 1:length(R.range)){
-        print(r)
-        km.cols.r <- kmeans(x = pc.col$x[,1:2], centers = R.range[r], nstart = 20)
+        km.cols.r <- kmeans(x = pc.col, centers = R.range[r], nstart = 20)
         wssq.cols[r] <- km.cols.r$tot.withinss
     }
     R.sel <- change.point.model(y = wssq.cols, x = R.range, nstart = 20, plot.fit = T)
-    col.cluster <- kmeans(x = pc.col$x, centers = R.sel, nstart = 20)$cluster
+    col.cluster <- kmeans(x = pc.col, centers = R.sel, nstart = 20)$cluster
 
     return(list(KR = c(K.values, R.values),
                 Cs = row.clusters,
