@@ -1,15 +1,15 @@
 Package: spartaco
 Title: Co-Clustering of Spatial Transcriptomics Data
 Version: 0.99.0
-Date: 2021-04-12
+Date: 2022-03-09
 Authors@R: 
     c(person(given = "Andrea",
            family = "Sottosanti",
-           role = "aut",
+           role = c("aut", "cre"),
            email = "andrea.sottosanti@unipd.it"),
       person(given = "Dario",
            family = "Righelli",
-           role = c("aut", "cre"),
+           role = "aut",
            email = "dario.righelli@gmail.com"),
       person(given = "Davide",
            family = "Risso",
