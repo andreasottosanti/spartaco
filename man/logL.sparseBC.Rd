@@ -2,7 +2,7 @@
 % Please edit documentation in R/logL_sparseBC.R
 \name{logL.sparseBC}
 \alias{logL.sparseBC}
-\title{Log-likelihood and the ICL of the Sparse Biclustering model}
+\title{Log-likelihood and ICL of the Sparse Biclustering model}
 \usage{
 logL.sparseBC(
   x,

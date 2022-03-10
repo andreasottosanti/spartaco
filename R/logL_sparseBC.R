@@ -1,4 +1,4 @@
-#' Log-likelihood and the ICL of the Sparse Biclustering model
+#' Log-likelihood and ICL of the Sparse Biclustering model
 #'
 #' This function computes the log-likelihood and the ICL of the Sparse Biclustering model of Tan & Witten (2014).
 #'
