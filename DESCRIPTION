@@ -16,14 +16,13 @@ Authors@R:
            role = "aut",
            email = "risso.davide@gmail.com"))
 Description: 
-    Implements a co-clustering model that includes spatial dendencies among 
-    samples. It can be used to identify cell types and spatially variable genes
-    in spatial transcriptomics studies.
+    Implements a co-clustering model that includes spatial dependencies among 
+    samples. It can be used to identify clusters of genes which are spatially expressed only in some specific tissue areas in spatial transcriptomic studies.
 Imports:
     Matrix,
     invgamma
 License: Artistic-2.0
-URL: https://github.com/drighelli/spartaco
+URL: https://github.com/andreasottosanti/spartaco
 BugReports: https://support.bioconductor.org/t/spartaco
 biocViews: Software
 Encoding: UTF-8

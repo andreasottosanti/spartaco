@@ -3,6 +3,7 @@
 export(CER)
 export(GeneVariances)
 export(PCA.Kmeans.KR)
+export(logL.sparseBC)
 export(spartaco)
 import(SpatialExperiment)
 import(coda)
