@@ -4,33 +4,23 @@
 \alias{logL.sparseBC}
 \title{Log-likelihood and ICL of the Sparse Biclustering model}
 \usage{
-logL.sparseBC(
-  x,
-  Cs = NULL,
-  Ds = NULL,
-  mu = NULL,
-  lambda = 0,
-  results = NULL,
-  ICL = F
-)
+logL.sparseBC(x, results = NULL, Cs = NULL, Ds = NULL, mu = NULL, lambda = 0)
 }
 \arguments{
 \item{x}{the data matrix;}
 
-\item{Cs}{the row clustering labels;}
+\item{results}{an object of class \code{sparseBC};}
 
-\item{Ds}{the column clustering labels;}
+\item{Cs}{the row clustering labels (only if \code{results = NULL});}
 
-\item{mu}{the \code{K}x\code{R} matrix containing the co-cluster centroids;}
+\item{Ds}{the column clustering labels (only if \code{results = NULL});}
 
-\item{lambda}{the penalization parameter;}
+\item{mu}{the \code{K}x\code{R} matrix containing the co-cluster centroids (only if \code{results = NULL});}
 
-\item{results}{it recieves an object of class \code{sparseBC} as input;}
-
-\item{ICL}{logical; if true, it returns the integrated complete log-likelihood of the model.}
+\item{lambda}{the penalization parameter (only if \code{results = NULL});}
 }
 \value{
-If \code{ICL = F}, it returns the log-likelihood of the model, otherwise it returns the ICL.
+A list containing the log-likelihood, the ICL and the ML estimate of the scale parameter.
 }
 \description{
 This function computes the log-likelihood and the ICL of the Sparse Biclustering model of Tan & Witten (2014).

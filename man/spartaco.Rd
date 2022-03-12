@@ -18,6 +18,7 @@ spartaco(
   input.values = NULL,
   conv.criterion = list(iterations = 10, epsilon = 1e-04),
   verbose = TRUE,
+  save.options = NULL,
   seed = NULL
 )
 }
@@ -48,6 +49,8 @@ spartaco(
 
 \item{verbose}{if \code{TRUE}, it displays the on-going estimation process.}
 
+\item{save.options}{a list for specifying the saving parameters (see \strong{Details}).}
+
 \item{seed}{set the interval seed of the function.}
 }
 \value{
@@ -76,6 +79,9 @@ If the algorithm is initiated from some starting values, it is no longer necessa
 By passing to \code{input.values} an output of the \code{spartaco} function, the algorithm starts the estimation from the arrival points of the previous run (see \strong{Examples}).
 
 If \code{conv.criterion = NULL}, the algorithm is stopped after \code{max.iter} itereations, otherwise it is stopped when the increment of the log-likelihood is smaller than a certain threshold \code{conv.criterion$epsilon} for \code{conv.criterion$iterations} times in a row.
+
+The function allows also to save the results even if the estimation is not completed. To do so, \code{save.options} received a list of two parameters:
+\code{after} gives the number of iterations after which the results are saved, \code{file.name} contains the path where the results are saved.
 }
 \examples{
 library(spartaco)

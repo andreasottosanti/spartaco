@@ -9,6 +9,7 @@ main <- function(x, coordinates,
                  prob.m = c(.7, .2, .1),
                  conv.criterion = conv.criterion,
                  input.values = NULL,
+                 save.options = NULL,
                  verbose = F){
     Dist <- as.matrix(stats::dist(coordinates))
     if(is.null(input.values)){
@@ -204,9 +205,48 @@ main <- function(x, coordinates,
                 counter.conv <- 0
             }
         }
+
+        # save the result in the given location
+        if(!is.null(save.options)){
+            if(i %% save.options$after == 0){
+                ICL <- max(ll) - nrow(x)*K - ncol(x)*R - .5*(4*K*R+R)*log(nrow(x) * ncol(x))
+                results <- list(
+                    mu = best.mu,
+                    tau = best.tau,
+                    xi = best.xi,
+                    alpha = best.alpha,
+                    beta = best.beta,
+                    phi = best.phi,
+                    Cs = best.Cs,
+                    Ds = best.Ds,
+                    logL = ll[c(2:i)],
+                    ICL = ICL,
+                    x = x,
+                    coordinates = coordinates
+                )
+                save(results, file = save.options$file.name)
+            }
+        }
     }
 
     ICL <- max(ll) - nrow(x)*K - ncol(x)*R - .5*(4*K*R+R)*log(nrow(x) * ncol(x))
+    # save the result in the given location
+    if(!is.null(save.options)){
+        results <- list(
+            mu = best.mu,
+            tau = best.tau,
+            xi = best.xi,
+            alpha = best.alpha,
+            beta = best.beta,
+            phi = best.phi,
+            Cs = best.Cs,
+            Ds = best.Ds,
+            logL = ll[c(2:i)],
+            ICL = ICL,
+            x = x,
+            coordinates = coordinates)
+        save(results, file = save.options$file.name)
+    }
     return(list(
         mu = best.mu,
         tau = best.tau,

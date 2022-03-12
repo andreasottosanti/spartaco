@@ -18,6 +18,7 @@
 #' @param input.values the starting points of the estimation process (see **Details**). If passed, the values of `K` and `R` are taken from it. The output of a previous model estimation can be passed here.
 #' @param conv.criterion a list containing the parameters that define a converge criterion (see **Details**).
 #' @param verbose if `TRUE`, it displays the on-going estimation process.
+#' @param save.options a list for specifying the saving parameters (see **Details**).
 #' @param seed set the interval seed of the function.
 #'
 #'
@@ -41,6 +42,9 @@
 #' By passing to `input.values` an output of the `spartaco` function, the algorithm starts the estimation from the arrival points of the previous run (see **Examples**).
 #'
 #' If `conv.criterion = NULL`, the algorithm is stopped after `max.iter` itereations, otherwise it is stopped when the increment of the log-likelihood is smaller than a certain threshold `conv.criterion$epsilon` for `conv.criterion$iterations` times in a row.
+#'
+#' The function allows also to save the results even if the estimation is not completed. To do so, `save.options` received a list of two parameters:
+#' `after` gives the number of iterations after which the results are saved, `file.name` contains the path where the results are saved.
 
 # \deqn{p(x) = \frac{\lambda^x e^{-\lambda}}{x!}}{%p(x) = \lambda^x exp(-\lambda)/x!} for \eqn{x = 0, 1, 2, \ldots}
 
@@ -68,6 +72,7 @@ spartaco <- function(x,
                      input.values = NULL,
                      conv.criterion = list(iterations = 10, epsilon = 1e-4),
                      verbose = TRUE,
+                     save.options = NULL,
                      seed = NULL
                      ) {
 
@@ -89,5 +94,6 @@ spartaco <- function(x,
          prob.m = prob.m,
          conv.criterion = conv.criterion,
          input.values = input.values,
+         save.options = save.options,
          verbose = verbose)
 }
