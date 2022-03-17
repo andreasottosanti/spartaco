@@ -1,0 +1,98 @@
+#' Plot SpaRTaCo
+#'
+#' This function returns the ggplots of the mean and the spatial signal-to-noise ratios from a SpaRTaCo model.
+#'
+#' @import ggplot2
+#' @export
+#'
+#' @param x a `spartaco` object;
+#' @param type the type of plot you want to show. To display the co-cluster mean levels, set it to `"mean"`.
+#' To display the co-cluster spatial signal-to-noise ratios, set it to `"stn-ratio"`.
+#' To display the map of the spots coloured with respect to the estimated column clusters, set it to `"spots"`.
+#' @param title the plot title. If `NULL`, it does not add any title.
+#'
+#' @return THe requested plot is displayed. In addition, if assigned to an object, it will return the `ggplot` object.
+#'
+plot.spartaco <- function(x, type = c("mean", "stn-ratio", "spots"), title = NULL){
+    if(class(x) != "spartaco") stop("the input file is not a spartaco object")
+    if(length(type) > 1) type <- "mean"
+    K <- nrow(x$mu)
+    R <- ncol(x$mu)
+    k.lab <- 1:K
+    r.lab <- 1:R
+    gr <- expand.grid(k.lab,r.lab)
+    gr$Mu <- as.vector(x$mu)
+    gr$Ratio <- as.vector(x$tau/x$xi)
+    gr <- cbind(gr, expand.grid(as.vector(table(x$Cs))/nrow(x$x),as.vector(table(x$Ds))/ncol(x$x)))
+    names(gr)[-c(3,4)] <- c("Y","X","height","width")
+
+    prop.x <- as.vector(table(x$Ds))/ncol(x$x)
+    prop.y <- as.vector(table(x$Cs))/nrow(x$x)
+    xlim.left <- c(0, cumsum(prop.x)[-R])
+    xlim.right <- cumsum(prop.x)
+    ylim.left <- c(0, cumsum(prop.y)[-K])
+    ylim.right <- cumsum(prop.y)
+
+
+    # ---plot mu
+    if(type == "mean"){
+        Plots <- ggplot(gr, aes(xmin = as.vector(sapply(1:R, function(i) rep(xlim.left[i],K))),
+                                     xmax = as.vector(sapply(1:R, function(i) rep(xlim.right[i],K))),
+                                     ymin = rep(ylim.left,R),
+                                     ymax = rep(ylim.right,R),
+                                     fill = Mu)
+        )+geom_rect()+theme_bw()+
+            scale_fill_distiller(palette = "RdPu")+
+            theme(panel.grid.major = element_blank(),
+                  panel.grid.minor = element_blank(),
+                  axis.text=element_text(size=18),
+                  axis.title=element_text(size=18),
+                  legend.text = element_text(size = 18),
+                  legend.title = element_text(size = 22),
+                  #legend.position = "bottom",
+                  plot.title = element_text(hjust = 0.5),
+                  title = element_text(size=18),
+                  plot.margin=grid::unit(c(3,2,3,2), "mm"))+
+            labs(fill=expression(hat(mu)[kr]))+
+            scale_x_continuous(breaks=(xlim.left+xlim.right)/2,
+                               labels=paste("r =",1:R)
+            )+
+            scale_y_continuous(breaks=(ylim.left+ylim.right)/2,
+                               labels=paste("k =",1:K)
+            )
+        if(!is.null(title)) Plots <- Plots + ggtitle(label = title)
+        plot(Plots)
+        invisible(Plots)
+    }
+    # ---plot tau/xi
+
+    if(type == "stn-ratio"){
+        Plots <- ggplot(gr, aes(xmin = as.vector(sapply(1:R, function(i) rep(xlim.left[i],K))),
+                                     xmax = as.vector(sapply(1:R, function(i) rep(xlim.right[i],K))),
+                                     ymin = rep(ylim.left,R),
+                                     ymax = rep(ylim.right,R),
+                                     fill = Ratio)
+        )+geom_rect()+theme_bw()+
+            viridis::scale_fill_viridis(discrete=FALSE)+
+            theme(panel.grid.major = element_blank(),
+                  panel.grid.minor = element_blank(),
+                  axis.text=element_text(size=18),
+                  axis.title=element_text(size=18),
+                  legend.text = element_text(size = 18),
+                  legend.title = element_text(size = 22),
+                  #legend.position = "bottom",
+                  plot.title = element_text(hjust = 0.5),
+                  title = element_text(size=18),
+                  plot.margin=grid::unit(c(3,2,3,2), "mm"))+
+            labs(fill=expression(hat(tau)[kr]/hat(xi)[kr]))+
+            scale_x_continuous(breaks=(xlim.left+xlim.right)/2,
+                               labels=paste("r =",1:R)
+            )+
+            scale_y_continuous(breaks=(ylim.left+ylim.right)/2,
+                               labels=paste("k =",1:K)
+            )
+        if(!is.null(title)) Plots <- Plots + ggtitle(label = title)
+        plot(Plots)
+        invisible(Plots)
+    }
+}

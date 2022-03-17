@@ -224,6 +224,7 @@ main <- function(x, coordinates,
                     x = x,
                     coordinates = coordinates
                 )
+                class(results) <- "spartaco"
                 save(results, file = save.options$file.name)
             }
         }
@@ -245,9 +246,10 @@ main <- function(x, coordinates,
             ICL = ICL,
             x = x,
             coordinates = coordinates)
+        class(results) <- "spartaco"
         save(results, file = save.options$file.name)
     }
-    return(list(
+    results <- list(
         mu = best.mu,
         tau = best.tau,
         xi = best.xi,
@@ -260,5 +262,7 @@ main <- function(x, coordinates,
         ICL = ICL,
         x = x,
         coordinates = coordinates
-    ))
+    )
+    class(results) <- "spartaco"
+    return(results)
 }
