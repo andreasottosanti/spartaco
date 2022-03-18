@@ -1,16 +1,19 @@
-CombineResults <- function(results = NULL, KR = NULL, search.dir = NULL, display = F, compute.discrepancy = F){
+CombineResults <- function(x = NULL, KR = NULL, search.dir = NULL, display = F, compute.discrepancy = F){
     loadRData <- function(fileName){
         #loads an RData file, and returns it
         load(fileName)
         get(ls()[ls() != "fileName"])
     }
-    if(is.null(results)){
+    if(is.null(x)){
         if(is.null(search.dir)) search.dir <- getwd()
         dat <- dir(search.dir)
         dat <- dat[grepl(paste("K",KR[1],"_R",KR[2], sep = ""), dat)]
         cat(paste("Found", length(dat),"files in the current directory\n"))
         results <- list()
         for(i in 1:length(dat)) results[[i]] <- loadRData(paste(search.dir,dat[i],sep="/"))
+    } else {
+        results <- list()
+        for(i in 1:length(dat)) results[[i]] <- loadRData(x[i])
     }
     likelihoods <- list()
     maxi <- rep(-Inf, length(results))
@@ -30,18 +33,51 @@ CombineResults <- function(results = NULL, KR = NULL, search.dir = NULL, display
             final$ICL <- results[[i]]$ICL
         }
     }
-    if(compute.discrepancy){
-        DS <- sapply(1:length(results), function(i) results[[i]]$Ds)
-        final$CERs <- diag(0,length(results),length(results))
-        sapply(1:(length(results)-1), function(i){
-            sapply(i:length(results), function(j){
-                final$CERs[i,j] <<- final$CERs[j,i] <<- CER(DS[,i], DS[,j])
-            })
-        })
-    }
     final$max.logL <- maxi
     final$x <- results[[i]]$x
     final$coordinates <- results[[i]]$coordinates
+    if(compute.discrepancy){
+        #DS <- sapply(1:length(results), function(i) results[[i]]$Ds)
+        best.j <- which.max(final$max.logL)
+        j.to.invest <- setdiff(1:length(final$max.logL), best.j)
+        final$cluster.discr <- list()
+        # evaluate the discrepancy across the rows
+        cat("Computing the row discrepancy...\n")
+        CERs <- matrix(0, nrow(final$mu), length(j.to.invest))
+        sapply(1:nrow(final$mu), function(r){
+            reference <- as.numeric(final$Cs == r)
+            sapply(1:length(j.to.invest), function(j){
+                classif <- table(final$Cs, results[[j.to.invest[j]]]$Cs)[r,]
+                r.j <- as.numeric(attr(classif, "names"))[which.max(classif)]
+                comparison <- as.numeric(results[[j.to.invest[j]]]$Cs == r.j)
+                CERs[r,j] <<- CER(reference = reference, estimate = comparison)
+            })
+        })
+        final$cluster.discr$rows <- as.vector(CERs %*% (1/(final$max.logL[best.j]-final$max.logL[-best.j])))/sum(1/(final$max.logL[best.j]-final$max.logL[-best.j]))
+            #list(aritmCER = rowMeans(CERs),
+            #                                geomCER = exp(rowMeans(log(CERs))),
+            #                                weightCER = as.vector(CERs %*% (1/(final$max.logL[best.j]-final$max.logL[-best.j])))/sum(1/(final$max.logL[best.j]-final$max.logL[-best.j]))
+        #)
+
+        # evaluate the discrepancy across the columns
+        cat("Computing the column discrepancy...\n")
+        CERs <- matrix(0, ncol(final$mu), length(j.to.invest))
+        sapply(1:ncol(final$mu), function(r){
+            reference <- as.numeric(final$Ds == r)
+            sapply(1:length(j.to.invest), function(j){
+                classif <- table(final$Ds, results[[j.to.invest[j]]]$Ds)[r,]
+                r.j <- as.numeric(attr(classif, "names"))[which.max(classif)]
+                comparison <- as.numeric(results[[j.to.invest[j]]]$Ds == r.j)
+                CERs[r,j] <<- CER(reference = reference, estimate = comparison)
+            })
+        })
+        final$cluster.discr$columns <- as.vector(CERs %*% (1/(final$max.logL[best.j]-final$max.logL[-best.j])))/sum(1/(final$max.logL[best.j]-final$max.logL[-best.j]))
+            #list(aritmCER = rowMeans(CERs),
+            #                geomCER = exp(rowMeans(log(CERs))),
+            #                weightCER = as.vector(CERs %*% (1/(final$max.logL[best.j]-final$max.logL[-best.j])))/sum(1/(final$max.logL[best.j]-final$max.logL[-best.j]))
+            #            )
+    }
+
     if(display){
         ranges <- as.vector(unlist(likelihoods))
         plot(1,1,

@@ -10,10 +10,10 @@
 #' To display the co-cluster spatial signal-to-noise ratios, set it to `"stn-ratio"`.
 #' To display the map of the spots coloured with respect to the estimated column clusters, set it to `"spots"`.
 #' @param title the plot title. If `NULL`, it does not add any title.
+#' @param manual.palette is a vector of colors used when `type = "spots"`.
+#' @return The requested plot is displayed. In addition, if assigned to an object, it will return the `ggplot` object.
 #'
-#' @return THe requested plot is displayed. In addition, if assigned to an object, it will return the `ggplot` object.
-#'
-plot.spartaco <- function(x, type = c("mean", "stn-ratio", "spots"), title = NULL){
+plot.spartaco <- function(x, type = c("mean", "stn-ratio", "spots"), title = NULL, manual.palette = NULL){
     if(class(x) != "spartaco") stop("the input file is not a spartaco object")
     if(length(type) > 1) type <- "mean"
     K <- nrow(x$mu)
@@ -91,6 +91,34 @@ plot.spartaco <- function(x, type = c("mean", "stn-ratio", "spots"), title = NUL
             scale_y_continuous(breaks=(ylim.left+ylim.right)/2,
                                labels=paste("k =",1:K)
             )
+        if(!is.null(title)) Plots <- Plots + ggtitle(label = title)
+        plot(Plots)
+        invisible(Plots)
+    }
+
+    if(type == "spots"){
+        # ---plot column clusters
+        manual.palette <- c("red","yellow","lightblue","green","blue","purple","salmon","black","grey")
+        Coord <- data.frame(x = x$coordinates[,2], y = -x$coordinates[,1], z = as.factor(x$Ds))
+        Plots <- ggplot(Coord, aes(x, y, color = z))+geom_point(size = 3)+theme_bw()+
+            labs(col = "")+
+            scale_color_manual(values = manual.palette)+#scale_color_brewer(palette="Set1")
+            labs(col = expression(D[r]))+
+            theme(panel.grid.major = element_blank(),
+                  panel.grid.minor = element_blank(),
+                  axis.text.x = element_blank(),#element_text(size=18),
+                  axis.text.y = element_blank(),
+                  axis.ticks.x = element_blank(),
+                  axis.ticks.y = element_blank(),
+                  axis.title=element_blank(),#element_text(size=18),
+                  legend.text = element_text(size = 18),
+                  legend.title = element_text(size = 22),
+                  plot.title = element_text(hjust = 0.5),
+                  #legend.position = "bottom",
+                  #legend.spacing.x = unit(0.3, 'cm'),
+                  title = element_text(size=18),
+                  plot.margin=grid::unit(c(3,2,3,2), "mm"))+
+            geom_point(shape = 1,size = 3,colour = "black")
         if(!is.null(title)) Plots <- Plots + ggtitle(label = title)
         plot(Plots)
         invisible(Plots)

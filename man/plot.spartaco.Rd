@@ -4,7 +4,12 @@
 \alias{plot.spartaco}
 \title{Plot SpaRTaCo}
 \usage{
-\method{plot}{spartaco}(x, type = c("mean", "stn-ratio", "spots"), title = NULL)
+\method{plot}{spartaco}(
+  x,
+  type = c("mean", "stn-ratio", "spots"),
+  title = NULL,
+  manual.palette = NULL
+)
 }
 \arguments{
 \item{x}{a \code{spartaco} object;}
@@ -14,9 +19,11 @@ To display the co-cluster spatial signal-to-noise ratios, set it to \code{"stn-r
 To display the map of the spots coloured with respect to the estimated column clusters, set it to \code{"spots"}.}
 
 \item{title}{the plot title. If \code{NULL}, it does not add any title.}
+
+\item{manual.palette}{is a vector of colors used when \code{type = "spots"}.}
 }
 \value{
-THe requested plot is displayed. In addition, if assigned to an object, it will return the \code{ggplot} object.
+The requested plot is displayed. In addition, if assigned to an object, it will return the \code{ggplot} object.
 }
 \description{
 This function returns the ggplots of the mean and the spatial signal-to-noise ratios from a SpaRTaCo model.
