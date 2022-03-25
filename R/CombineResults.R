@@ -36,28 +36,26 @@ CombineResults <- function(x = NULL, KR = NULL, search.dir = NULL, display = F, 
     final$max.logL <- maxi
     final$x <- results[[i]]$x
     final$coordinates <- results[[i]]$coordinates
+    #final$CS <- sapply(1:length(results), function(i) results[[i]]$Cs)
+    #final$DS <- sapply(1:length(results), function(i) results[[i]]$Ds)
     if(compute.discrepancy){
-        #DS <- sapply(1:length(results), function(i) results[[i]]$Ds)
         best.j <- which.max(final$max.logL)
         j.to.invest <- setdiff(1:length(final$max.logL), best.j)
         final$cluster.discr <- list()
         # evaluate the discrepancy across the rows
         cat("Computing the row discrepancy...\n")
         CERs <- matrix(0, nrow(final$mu), length(j.to.invest))
-        sapply(1:nrow(final$mu), function(r){
-            reference <- as.numeric(final$Cs == r)
+        sapply(1:nrow(final$mu), function(k){
+            reference <- as.numeric(final$Cs == k)
             sapply(1:length(j.to.invest), function(j){
-                classif <- table(final$Cs, results[[j.to.invest[j]]]$Cs)[r,]
-                r.j <- as.numeric(attr(classif, "names"))[which.max(classif)]
-                comparison <- as.numeric(results[[j.to.invest[j]]]$Cs == r.j)
-                CERs[r,j] <<- CER(reference = reference, estimate = comparison)
+                classif <- table(final$Cs, results[[j.to.invest[j]]]$Cs)[k,]
+                k.j <- as.numeric(attr(classif, "names"))[which.max(classif)]
+                comparison <- as.numeric(results[[j.to.invest[j]]]$Cs == k.j)
+                CERs[k,j] <<- CER(reference = reference, estimate = comparison)
             })
         })
-        final$cluster.discr$rows <- as.vector(CERs %*% (1/(final$max.logL[best.j]-final$max.logL[-best.j])))/sum(1/(final$max.logL[best.j]-final$max.logL[-best.j]))
-            #list(aritmCER = rowMeans(CERs),
-            #                                geomCER = exp(rowMeans(log(CERs))),
-            #                                weightCER = as.vector(CERs %*% (1/(final$max.logL[best.j]-final$max.logL[-best.j])))/sum(1/(final$max.logL[best.j]-final$max.logL[-best.j]))
-        #)
+        w <- 1/(final$max.logL[best.j]-final$max.logL[-best.j])
+        final$cluster.discr$rows <- as.vector((CERs %*% w)/sum(w))
 
         # evaluate the discrepancy across the columns
         cat("Computing the column discrepancy...\n")
@@ -71,11 +69,8 @@ CombineResults <- function(x = NULL, KR = NULL, search.dir = NULL, display = F, 
                 CERs[r,j] <<- CER(reference = reference, estimate = comparison)
             })
         })
-        final$cluster.discr$columns <- as.vector(CERs %*% (1/(final$max.logL[best.j]-final$max.logL[-best.j])))/sum(1/(final$max.logL[best.j]-final$max.logL[-best.j]))
-            #list(aritmCER = rowMeans(CERs),
-            #                geomCER = exp(rowMeans(log(CERs))),
-            #                weightCER = as.vector(CERs %*% (1/(final$max.logL[best.j]-final$max.logL[-best.j])))/sum(1/(final$max.logL[best.j]-final$max.logL[-best.j]))
-            #            )
+        w <- 1/(final$max.logL[best.j]-final$max.logL[-best.j])
+        final$cluster.discr$columns <- as.vector((CERs %*% w)/sum(w))
     }
 
     if(display){

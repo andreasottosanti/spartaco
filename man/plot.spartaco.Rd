@@ -4,19 +4,20 @@
 \alias{plot.spartaco}
 \title{Plot SpaRTaCo}
 \usage{
-\method{plot}{spartaco}(
-  x,
-  type = c("mean", "stn-ratio", "spots"),
-  title = NULL,
-  manual.palette = NULL
-)
+\method{plot}{spartaco}(x, type = 1, k = NULL, r = NULL, title = NULL, manual.palette = NULL, ...)
 }
 \arguments{
 \item{x}{a \code{spartaco} object;}
 
-\item{type}{the type of plot you want to show. To display the co-cluster mean levels, set it to \code{"mean"}.
-To display the co-cluster spatial signal-to-noise ratios, set it to \code{"stn-ratio"}.
-To display the map of the spots coloured with respect to the estimated column clusters, set it to \code{"spots"}.}
+\item{type}{the type of plot you want to show.
+\code{1} displays the co-cluster mean levels,
+\code{2} displays the co-cluster spatial signal-to-noise ratios,
+\code{3} displays the map of the spots colored with respect to the estimated column clusters,
+and \code{4} displays the sample mean of some or of all the gene clusters.}
+
+\item{k}{if \code{type = 4}, it displays the sample mean of each gene cluster is shown.}
+
+\item{r}{if \code{type = 4}, it displays the sample mean of each gene cluster is shown.}
 
 \item{title}{the plot title. If \code{NULL}, it does not add any title.}
 

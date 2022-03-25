@@ -4,14 +4,16 @@
 \alias{PCA.Kmeans.KR}
 \title{PCA K-means model selection}
 \usage{
-PCA.Kmeans.KR(x, K.range, R.range)
+PCA.Kmeans.KR(x, K.max, R.max, continuity = F)
 }
 \arguments{
 \item{x}{the data matrix;}
 
-\item{K.range}{the range of row clusters to evaluate;}
+\item{K.max}{the maximum number of row clusters to evaluate;}
 
-\item{R.range}{the range of column clusters to evaluate.}
+\item{R.max}{the maximum number of column clusters to evaluate.}
+
+\item{continuity}{if \code{TRUE}, the change point linear model is fitted under the constraint that the function is continuous in the change point.}
 }
 \value{
 A list containing the values of \code{K} and \code{R} selected and the clustering labels with the
