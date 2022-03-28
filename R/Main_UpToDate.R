@@ -8,6 +8,7 @@ main <- function(x, coordinates,
                  sampling.m = "standard",
                  prob.m = c(.7, .2, .1),
                  conv.criterion = conv.criterion,
+                 lambda.phi = lambda.phi,
                  input.values = NULL,
                  save.options = NULL,
                  verbose = F){
@@ -80,7 +81,8 @@ main <- function(x, coordinates,
                                                Xi = cur.xi[,r],
                                                Alpha = cur.alpha[,r],
                                                Beta = cur.beta[,r],
-                                               phi.old = cur.phi[r])
+                                               phi.old = cur.phi[r],
+                                               lambda.phi = lambda.phi)
             EigenK <- eigen(exp(-Dist[cur.Ds == r, cur.Ds == r]/cur.phi[r]))
             Uglob[[r]] <<- EigenK$vec
             Dglob[cur.Ds == r] <<- EigenK$val
