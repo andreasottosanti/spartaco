@@ -1,5 +1,5 @@
-updatePhi_r_marginal <- function(x, Cs, Dist, Mu, Tau, Xi, Alpha, Beta, phi.old = 1, lambda.phi = NULL){
-    if(is.null(lambda.phi)) lambda.phi <- 0
+updatePhi_r_marginal <- function(x, Cs, Dist, Mu, Tau, Xi, Alpha, Beta, phi.old = 1, lambda = NULL){
+    if(is.null(lambda)) lambda <- 0
     goodK <- sort(unique(Cs))
     routine.phi <- optim(par = phi.old, fn = function(phi){
         if(phi <= 0) return(-Inf)
@@ -11,7 +11,7 @@ updatePhi_r_marginal <- function(x, Cs, Dist, Mu, Tau, Xi, Alpha, Beta, phi.old 
             beta.i <- G.mat %*% (1/(Tau[k]*eig$val + Xi[k]))/2 + Beta[k]
             return(-sum(Cs == k)/2*sum(log(Tau[k]*eig$val + Xi[k])) - sum(alpha.i * log(beta.i)))
         })
-        -sum(val - lambda.phi * phi^2)
+        -sum(val - lambda * phi^2)
     })
     if(routine.phi$conv != 0) stop("Converge error in Phi!")
     return(routine.phi$par)

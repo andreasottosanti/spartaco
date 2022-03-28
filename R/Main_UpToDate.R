@@ -82,7 +82,7 @@ main <- function(x, coordinates,
                                                Alpha = cur.alpha[,r],
                                                Beta = cur.beta[,r],
                                                phi.old = cur.phi[r],
-                                               lambda.phi = lambda.phi)
+                                               lambda = lambda.phi)
             EigenK <- eigen(exp(-Dist[cur.Ds == r, cur.Ds == r]/cur.phi[r]))
             Uglob[[r]] <<- EigenK$vec
             Dglob[cur.Ds == r] <<- EigenK$val
