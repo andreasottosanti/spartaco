@@ -8,7 +8,7 @@ main <- function(x, coordinates,
                  sampling.m = "standard",
                  prob.m = c(.7, .2, .1),
                  conv.criterion = NULL,
-                 lambda.tau = NULL,
+                 #lambda.tau = NULL,
                  lambda.phi = NULL,
                  input.values = NULL,
                  save.options = NULL,
@@ -68,7 +68,8 @@ main <- function(x, coordinates,
                                                                                                  beta0 = cur.beta[k,r],
                                                                                                  tau0 = cur.tau[k,r],
                                                                                                  maxit = estimate.iterations,
-                                                                                                 lambda.tau = lambda.tau)
+                                                                                                 #lambda.tau = lambda.tau
+                                                                                                 )
                 cur.mu[k,r] <<- estimation.parameters$mu
                 cur.tau[k,r] <<- estimation.parameters$tau
                 cur.xi[k,r] <<- estimation.parameters$xi
@@ -140,7 +141,8 @@ main <- function(x, coordinates,
                                                                                                  beta0 = cur.beta[k,r],
                                                                                                  tau0 = cur.tau[k,r],
                                                                                                  maxit = estimate.iterations,
-                                                                                                 lambda.tau = lambda.tau)
+                                                                                                 #lambda.tau = lambda.tau
+                                                                                                 )
                 cur.mu[k,r] <<- estimation.parameters$mu
                 cur.tau[k,r] <<- estimation.parameters$tau
                 cur.xi[k,r] <<- estimation.parameters$xi
