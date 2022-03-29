@@ -17,6 +17,7 @@
 #' @param prob.m the vector of probabilities used to sample *m* when `sampling.m = "standard"`.
 #' @param input.values the starting points of the estimation process (see **Details**). If passed, the values of `K` and `R` are taken from it. The output of a previous model estimation can be passed here.
 #' @param conv.criterion a list containing the parameters that define a converge criterion (see **Details**).
+#' @param lambda.tau the penalization LASSO parameter of the spatial variance \eqn{tau_{kr}} (`NULL` default).
 #' @param lambda.phi the penalization RIDGE parameter of the scale coefficient (`NULL` default).
 #' @param verbose if `TRUE`, it displays the on-going estimation process.
 #' @param save.options a list for specifying the saving parameters (see **Details**).
@@ -72,6 +73,7 @@ spartaco <- function(x,
                      prob.m = c(.7, .2, .1),
                      input.values = NULL,
                      conv.criterion = list(iterations = 10, epsilon = 1e-4),
+                     lambda.tau = NULL,
                      lambda.phi = NULL,
                      verbose = TRUE,
                      save.options = NULL,
@@ -95,6 +97,8 @@ spartaco <- function(x,
          sampling.m = sampling.m,
          prob.m = prob.m,
          conv.criterion = conv.criterion,
+         lambda.tau = lambda.tau,
+         lambda.phi = lambda.phi,
          input.values = input.values,
          save.options = save.options,
          verbose = verbose)

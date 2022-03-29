@@ -17,6 +17,7 @@ spartaco(
   prob.m = c(0.7, 0.2, 0.1),
   input.values = NULL,
   conv.criterion = list(iterations = 10, epsilon = 1e-04),
+  lambda.tau = NULL,
   lambda.phi = NULL,
   verbose = TRUE,
   save.options = NULL,
@@ -47,6 +48,8 @@ spartaco(
 \item{input.values}{the starting points of the estimation process (see \strong{Details}). If passed, the values of \code{K} and \code{R} are taken from it. The output of a previous model estimation can be passed here.}
 
 \item{conv.criterion}{a list containing the parameters that define a converge criterion (see \strong{Details}).}
+
+\item{lambda.tau}{the penalization LASSO parameter of the spatial variance \eqn{tau_{kr}} (\code{NULL} default).}
 
 \item{lambda.phi}{the penalization RIDGE parameter of the scale coefficient (\code{NULL} default).}
 

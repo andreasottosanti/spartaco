@@ -8,6 +8,7 @@ main <- function(x, coordinates,
                  sampling.m = "standard",
                  prob.m = c(.7, .2, .1),
                  conv.criterion = NULL,
+                 lambda.tau = NULL,
                  lambda.phi = NULL,
                  input.values = NULL,
                  save.options = NULL,
@@ -66,7 +67,8 @@ main <- function(x, coordinates,
                                                                                                  alpha0 = cur.alpha[k,r],
                                                                                                  beta0 = cur.beta[k,r],
                                                                                                  tau0 = cur.tau[k,r],
-                                                                                                 maxit = estimate.iterations)
+                                                                                                 maxit = estimate.iterations,
+                                                                                                 lambda.tau = lambda.tau)
                 cur.mu[k,r] <<- estimation.parameters$mu
                 cur.tau[k,r] <<- estimation.parameters$tau
                 cur.xi[k,r] <<- estimation.parameters$xi
@@ -82,7 +84,7 @@ main <- function(x, coordinates,
                                                Alpha = cur.alpha[,r],
                                                Beta = cur.beta[,r],
                                                phi.old = cur.phi[r],
-                                               lambda = lambda.phi)
+                                               lambda.phi = lambda.phi)
             EigenK <- eigen(exp(-Dist[cur.Ds == r, cur.Ds == r]/cur.phi[r]))
             Uglob[[r]] <<- EigenK$vec
             Dglob[cur.Ds == r] <<- EigenK$val
@@ -137,7 +139,8 @@ main <- function(x, coordinates,
                                                                                                  alpha0 = cur.alpha[k,r],
                                                                                                  beta0 = cur.beta[k,r],
                                                                                                  tau0 = cur.tau[k,r],
-                                                                                                 maxit = estimate.iterations)
+                                                                                                 maxit = estimate.iterations,
+                                                                                                 lambda.tau = lambda.tau)
                 cur.mu[k,r] <<- estimation.parameters$mu
                 cur.tau[k,r] <<- estimation.parameters$tau
                 cur.xi[k,r] <<- estimation.parameters$xi
@@ -152,7 +155,8 @@ main <- function(x, coordinates,
                                                 Xi = cur.xi[,r],
                                                 Alpha = cur.alpha[,r],
                                                 Beta = cur.beta[,r],
-                                                phi.old = cur.phi[r])
+                                                phi.old = cur.phi[r],
+                                                lambda.phi = lambda.phi)
             EigenK <- eigen(exp(-Dist[cur.Ds == r, cur.Ds == r]/cur.phi[r]))
             Uglob[[r]] <<- EigenK$vec
             Dglob[cur.Ds == r] <<- EigenK$val

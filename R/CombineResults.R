@@ -13,7 +13,7 @@ CombineResults <- function(x = NULL, KR = NULL, search.dir = NULL, display = F, 
         for(i in 1:length(dat)) results[[i]] <- loadRData(paste(search.dir,dat[i],sep="/"))
     } else {
         results <- list()
-        for(i in 1:length(dat)) results[[i]] <- loadRData(x[i])
+        for(i in 1:length(x)) results[[i]] <- loadRData(x[i])
     }
     likelihoods <- list()
     maxi <- rep(-Inf, length(results))
