@@ -49,7 +49,7 @@ spartaco(
 
 \item{conv.criterion}{a list containing the parameters that define a converge criterion (see \strong{Details}).}
 
-\item{lambda.tau}{the penalization LASSO parameter of the spatial variance \eqn{tau_{kr}} (\code{NULL} default).}
+\item{lambda.tau}{the penalization RIDGE parameter of the variance parameter \eqn{\tau_{kr}} (\code{NULL} default).}
 
 \item{lambda.phi}{the penalization RIDGE parameter of the scale coefficient (\code{NULL} default).}
 
@@ -66,7 +66,7 @@ The function returns a list with the parameter estimates, the clustering labels,
 This function returns the estimated model parameters and the co-clustering labels.
 }
 \details{
-\code{Delta.constr} gives the quantity \deqn{c = \tau_kr + \xi_kr,} where \eqn{\tau_kr} and \eqn{\xi_kr} are the spatial variance and the nugget effect of block \eqn{(k,r)}.
+\code{Delta.constr} gives the quantity \deqn{c = \tau_{kr} + \xi_{kr},} where \eqn{\tau_{kr}} and \eqn{\xi_{kr}} are the spatial variance and the nugget effect of block \eqn{(k,r)}.
 
 The are two methods for selecting \emph{m}, the number of items the SE Step attempts to change in a single iteration.
 If \code{sampling.m = "standard"}, then \code{m = sample(1:length(prob.m), 1, F, prob.m)}.

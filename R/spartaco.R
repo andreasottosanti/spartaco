@@ -17,6 +17,7 @@
 #' @param prob.m the vector of probabilities used to sample *m* when `sampling.m = "standard"`.
 #' @param input.values the starting points of the estimation process (see **Details**). If passed, the values of `K` and `R` are taken from it. The output of a previous model estimation can be passed here.
 #' @param conv.criterion a list containing the parameters that define a converge criterion (see **Details**).
+#' @param lambda.tau the penalization RIDGE parameter of the variance parameter \eqn{\tau_{kr}} (`NULL` default).
 #' @param lambda.phi the penalization RIDGE parameter of the scale coefficient (`NULL` default).
 #' @param verbose if `TRUE`, it displays the on-going estimation process.
 #' @param save.options a list for specifying the saving parameters (see **Details**).
@@ -26,7 +27,7 @@
 #' @return The function returns a list with the parameter estimates, the clustering labels, the log-likelihood value at each iteration and the data, the ICL index, the data matrix and the coordinates matrix.
 
 #'
-#' @details `Delta.constr` gives the quantity \deqn{c = \tau_kr + \xi_kr,} where \eqn{\tau_kr} and \eqn{\xi_kr} are the spatial variance and the nugget effect of block \eqn{(k,r)}.
+#' @details `Delta.constr` gives the quantity \deqn{c = \tau_{kr} + \xi_{kr},} where \eqn{\tau_{kr}} and \eqn{\xi_{kr}} are the spatial variance and the nugget effect of block \eqn{(k,r)}.
 #'
 #' The are two methods for selecting *m*, the number of items the SE Step attempts to change in a single iteration.
 #' If `sampling.m = "standard"`, then `m = sample(1:length(prob.m), 1, F, prob.m)`.
@@ -72,7 +73,7 @@ spartaco <- function(x,
                      prob.m = c(.7, .2, .1),
                      input.values = NULL,
                      conv.criterion = list(iterations = 10, epsilon = 1e-4),
-                     #lambda.tau = NULL,
+                     lambda.tau = NULL,
                      lambda.phi = NULL,
                      verbose = TRUE,
                      save.options = NULL,
@@ -96,7 +97,7 @@ spartaco <- function(x,
          sampling.m = sampling.m,
          prob.m = prob.m,
          conv.criterion = conv.criterion,
-         #lambda.tau = lambda.tau,
+         lambda.tau = lambda.tau,
          lambda.phi = lambda.phi,
          input.values = input.values,
          save.options = save.options,

@@ -6,10 +6,10 @@ Estimate.Cocluster.Parameters.marginal.constraint.trace <- function(x,
                                                                     beta0,
                                                                     tau0,
                                                                     traceDelta,
-                                                                    #lambda.tau = NULL,
+                                                                    lambda.tau = NULL,
                                                                     maxit = 200,
                                                                     threshold = 1e-4){
-    #if(is.null(lambda.tau)) lambda.tau <- 0
+    if(is.null(lambda.tau)) lambda.tau <- 0
     n <- nrow(x)
     p <- ncol(x)
     Mu <- cur.mu <- mu0
@@ -78,7 +78,7 @@ Estimate.Cocluster.Parameters.marginal.constraint.trace <- function(x,
                                  -(
                                      -n/2*sum(log(taup * d + xip)) -
                                          (p/2+cur.alpha) * sum(log(G.mat %*% (1/(taup * d + xip))/2 + cur.beta))
-                                     #- lambda.tau * abs(taup)
+                                     - lambda.tau * abs(taup)
                                     )
                              }, control = list(maxit = 1000))
         if(routine.tau$convergence != 0){
