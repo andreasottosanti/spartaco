@@ -2,7 +2,7 @@
 #'
 #' This function returns the summary statistics for the random variances estimated through SpaRTaCo within the `K*R` blocks.
 #'
-#' @import SpatialExperiment
+# #' @import SpatialExperiment
 #' @import invgamma
 #' @import coda
 #' @export

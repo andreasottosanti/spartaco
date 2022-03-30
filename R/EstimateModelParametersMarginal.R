@@ -93,7 +93,7 @@ Estimate.Cocluster.Parameters.marginal.constraint.trace <- function(x,
         Tau[i] <- cur.tau
 
         logL[i] <- logL.Cocluster(x, Mu[i], Tau[i], traceDelta/p-Tau[i], Alpha[i], Beta[i], U, d)
-        if(round(logL[i] - logL[i-1], 2) < 0) stop(cat("Decreasing loglikelihood within the M Step:",logL[i-1],"and",logL[i]))
+        #if(round(logL[i] - logL[i-1], 2) < 0) stop(cat("Decreasing loglikelihood within the M Step:",logL[i-1],"and",logL[i]))
         if((logL[i] - logL[i-1]) < threshold){
             converged <- T
             break}

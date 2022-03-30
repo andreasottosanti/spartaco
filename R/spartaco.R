@@ -2,7 +2,7 @@
 #'
 #' This function returns the estimated model parameters and the co-clustering labels.
 #'
-#' @import SpatialExperiment
+# #' @import SpatialExperiment
 #' @export
 #'
 #' @param x the input data matrix.

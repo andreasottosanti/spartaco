@@ -3,7 +3,7 @@
 #' This function returns the estimated number of row and column clusters by first applying a PCA on the data,
 #' and then determining the best K-means model based on a change point model fitted on the total within sum of squares.
 #'
-#' @import SpatialExperiment
+# #' @import SpatialExperiment
 #' @export
 #'
 #' @param x the data matrix;
