@@ -102,7 +102,10 @@ plot.spartaco <- function(x, type = 1, k = NULL, r = NULL, title = NULL, manual.
 
     if(type == 3){
         # ---plot column clusters
-        manual.palette <- c("red","yellow","lightblue","green","blue","purple","salmon","black","grey")
+        if(is.null(manual.palette))
+            manual.palette <- c("red","yellow","lightblue","green","blue","purple","salmon","black","grey","cornsilk", "chartreuse", "aquamarine") else
+                if(length(manual.palette) < R) manual.palette <- c(c("red","yellow","lightblue","green","blue","purple","salmon","black","grey"),
+                                                                   manual.palette)
         Coord <- data.frame(x = x$coordinates[,2], y = -x$coordinates[,1], z = as.factor(x$Ds))
         Plots <- ggplot(Coord, aes(x, y, color = z))+geom_point(size = 3)+theme_bw()+
             labs(col = "")+

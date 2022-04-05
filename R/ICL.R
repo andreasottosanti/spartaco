@@ -14,5 +14,6 @@ ICL <- function(x){
     R <- ncol(x$mu)
     n <- nrow(x$x)
     p <- ncol(x$x)
-    max(x$logL) - n*log(K) - p*log(R) - .5*(4*K*R+R)*log(n * p)
+    if(is.null(x$logL)) max(x$max.logL) - n*log(K) - p*log(R) - .5*(4*K*R+R)*log(n * p) else
+        max(x$logL) - n*log(K) - p*log(R) - .5*(4*K*R+R)*log(n * p)
 }
