@@ -238,7 +238,7 @@ main <- function(x, coordinates,
         }
     }
 
-    ICL <- max(ll) - nrow(x)*K - ncol(x)*R - .5*(4*K*R+R)*log(nrow(x) * ncol(x))
+    ICL <- max(ll) - nrow(x)*log(K) - ncol(x)*log(R) - .5*(4*K*R+R)*log(nrow(x) * ncol(x))
     # save the result in the given location
     if(!is.null(save.options)){
         results <- list(

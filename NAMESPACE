@@ -3,6 +3,7 @@
 S3method(plot,spartaco)
 export(CER)
 export(GeneVariances)
+export(ICL)
 export(PCA.Kmeans.KR)
 export(logL.sparseBC)
 export(spartaco)
