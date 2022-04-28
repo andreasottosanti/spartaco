@@ -4,24 +4,37 @@
 \alias{plot.spartaco}
 \title{Plot SpaRTaCo}
 \usage{
-\method{plot}{spartaco}(x, type = 1, k = NULL, r = NULL, title = NULL, manual.palette = NULL, ...)
+\method{plot}{spartaco}(
+  x,
+  type = 1,
+  gene.name = readline("gene name: "),
+  k = NULL,
+  r = 1:ncol(x$mu),
+  manual.palette = NULL,
+  display.all.spots = T,
+  ...
+)
 }
 \arguments{
 \item{x}{a \code{spartaco} object;}
 
 \item{type}{the type of plot you want to show.
-\code{1} displays the co-cluster mean levels,
-\code{2} displays the co-cluster spatial signal-to-noise ratios,
-\code{3} displays the map of the spots colored with respect to the estimated column clusters,
-and \code{4} displays the sample mean of some or of all the gene clusters.}
+\itemize{
+\item \code{1} displays the co-cluster mean levels;
+\item \code{2} displays the co-cluster spatial signal-to-noise ratios;
+\item \code{3} displays the map of the spots colored with respect to the estimated column clusters;
+\item \code{4} if \code{!is.null(k)}, it displays the average gene expression in the clusters \code{k} and \code{r}, otherwise it displays the expression of the gene given in \code{gene.name}.
+}}
 
-\item{k}{if \code{type = 4}, it displays the sample mean of each gene cluster is shown.}
+\item{gene.name}{(used only when \verb{type == 4)}; it receives the name of the gene to display. If \code{!is.null(k)}, it displays the average expression of the gene clusters given by \code{k}.}
 
-\item{r}{if \code{type = 4}, it displays the sample mean of each gene cluster is shown.}
+\item{k}{(used only when \verb{type == 4)} the gene clusters to plot.}
 
-\item{title}{the plot title. If \code{NULL}, it does not add any title.}
+\item{r}{(used only when \verb{type == 4)} the spot clusters to plot.}
 
-\item{manual.palette}{is a vector of colors used when \code{type = "spots"}.}
+\item{manual.palette}{a vector of colors used when \code{type == 3}.}
+
+\item{display.all.spots}{if \code{TRUE} (default) and \code{type == 4}, it displays the entire grid of spots.}
 }
 \value{
 The requested plot is displayed. In addition, if assigned to an object, it will return the \code{ggplot} object.

@@ -13,12 +13,9 @@ spartaco(
   max.iter = 1000,
   metropolis.iterations = 150,
   estimate.iterations = 100,
-  sampling.m = "standard",
   prob.m = c(0.7, 0.2, 0.1),
   input.values = NULL,
   conv.criterion = list(iterations = 10, epsilon = 1e-04),
-  lambda.tau = NULL,
-  lambda.phi = NULL,
   verbose = TRUE,
   save.options = NULL,
   seed = NULL
@@ -41,17 +38,11 @@ spartaco(
 
 \item{estimate.iterations}{the maximum number of iterations within each M Step.}
 
-\item{sampling.m}{the method used for selecting \emph{m}, the number of elements that the SE Step attempts to change in a single iteration (see \strong{Details}).}
-
-\item{prob.m}{the vector of probabilities used to sample \emph{m} when \code{sampling.m = "standard"}.}
+\item{prob.m}{the vector of probabilities assigned to the vector \code{1:length(prob.m)}, determining the number of columns the algorithm attempts to reallocate in a single SE Step.}
 
 \item{input.values}{the starting points of the estimation process (see \strong{Details}). If passed, the values of \code{K} and \code{R} are taken from it. The output of a previous model estimation can be passed here.}
 
 \item{conv.criterion}{a list containing the parameters that define a converge criterion (see \strong{Details}).}
-
-\item{lambda.tau}{the penalization RIDGE parameter of the variance parameter \eqn{\tau_{kr}} (\code{NULL} default).}
-
-\item{lambda.phi}{the penalization RIDGE parameter of the scale coefficient (\code{NULL} default).}
 
 \item{verbose}{if \code{TRUE}, it displays the on-going estimation process.}
 
@@ -60,17 +51,13 @@ spartaco(
 \item{seed}{set the interval seed of the function.}
 }
 \value{
-The function returns a list with the parameter estimates, the clustering labels, the log-likelihood value at each iteration and the data, the ICL index, the data matrix and the coordinates matrix.
+An object of class \code{spartaco} with the parameter estimates, the clustering labels, the log-likelihood value at each iteration and the data, the ICL, the data matrix and the coordinates matrix.
 }
 \description{
 This function returns the estimated model parameters and the co-clustering labels.
 }
 \details{
 \code{Delta.constr} gives the quantity \deqn{c = \tau_{kr} + \xi_{kr},} where \eqn{\tau_{kr}} and \eqn{\xi_{kr}} are the spatial variance and the nugget effect of block \eqn{(k,r)}.
-
-The are two methods for selecting \emph{m}, the number of items the SE Step attempts to change in a single iteration.
-If \code{sampling.m = "standard"}, then \code{m = sample(1:length(prob.m), 1, F, prob.m)}.
-If \code{sampling.m = "adaptive"}, then \code{m = 1 + rpois(1, 1/t+1/2)}, where \code{t} denotes the t-th iteration of the estimation algorithm.
 
 The algorithm can be initiated from a given set of starting values. To do so, \code{input.values} receives a list of the form
 \code{list(mu, tau, xi, alpha, beta, phi, Cs, Ds)}, where:
@@ -81,12 +68,12 @@ The algorithm can be initiated from a given set of starting values. To do so, \c
 \item \code{Ds} is a vector of length \code{ncol(x)} containing the column clustering labels.
 }
 
-If the algorithm is initiated from some starting values, it is no longer necessary to set \code{K} and \code{R}, as they are automatically taken from here.
-By passing to \code{input.values} an output of the \code{spartaco} function, the algorithm starts the estimation from the arrival points of the previous run (see \strong{Examples}).
+If the algorithm is initiated from some starting values,  \code{K} and \code{R} are set automatically according to the input values.
+If an object of class \code{spartaco} is passed to \code{input.values}, the estimation starts from the final estimate of the previous run (see \strong{Examples}).
 
-If \code{conv.criterion = NULL}, the algorithm is stopped after \code{max.iter} itereations, otherwise it is stopped when the increment of the log-likelihood is smaller than a certain threshold \code{conv.criterion$epsilon} for \code{conv.criterion$iterations} times in a row.
+If \code{conv.criterion == NULL}, the algorithm is stopped after \code{max.iter} itereations, otherwise it is stopped when the increment of the log-likelihood is smaller than a certain threshold \code{conv.criterion$epsilon} for \code{conv.criterion$iterations} times in a row.
 
-The function allows also to save the results even if the estimation is not completed. To do so, \code{save.options} received a list of two parameters:
+The function allows also to save the results even if the estimation is not completed. To do so, \code{save.options} receives a list of two parameters:
 \code{after} gives the number of iterations after which the results are saved, \code{file.name} contains the path where the results are saved.
 }
 \examples{
