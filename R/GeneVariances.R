@@ -88,9 +88,11 @@ GeneVariances <- function(x, gene.names = NULL, HPD.interval = list(level = .95,
         }
     }
     if(is.null(HPD.interval)) Inter.low <- Inter.up <- NULL
-    return(list(Expectation = Expected.post,
-                Variance = Variance.post,
-                HPD.left = Inter.low,
-                HPD.right = Inter.up,
-                Cs = Cs))
+    output <- list(Expectation = Expected.post,
+                   Variance = Variance.post,
+                   HPD.left = Inter.low,
+                   HPD.right = Inter.up,
+                   Cs = Cs)
+    class(output) <- "spartaco.genes"
+    return(output)
 }

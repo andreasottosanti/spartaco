@@ -3,7 +3,6 @@ MetropolisAllocation <- function(x, Cs, Ds,
                                  Dglob, # vector of length p, contains the eigenval
                                  Dist,
                                  Mu, Tau, Xi, Alpha, Beta, Phi, maxit = 10, min.obs = 3,
-                                 sampling.m = "adaptive",
                                  rate.m = NULL,
                                  prob.m = c(.7, .2, .1)){
     K <- ifelse(is.vector(Mu), 1, nrow(Mu))
@@ -28,7 +27,7 @@ MetropolisAllocation <- function(x, Cs, Ds,
     })
     logL.den <- sum(logL.values)
     for(iter in 1:maxit){
-        m <- m.list[iter] <- ifelse(sampling.m == "adaptive", 1+rpois(1, rate.m), sample(1:length(prob.m),1, prob = prob.m))
+        m <- m.list[iter] <- sample(1:length(prob.m),1, prob = prob.m)
         move <- sample(c("M1","M2"), size = 1)
         if(move == "M1"){
             gr.start <- sample(1:length(D), 1)

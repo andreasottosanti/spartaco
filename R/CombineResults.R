@@ -73,6 +73,12 @@ CombineResults <- function(x = NULL, KR = NULL, search.dir = NULL, display = F, 
         final$cluster.discr$columns <- as.vector((CERs %*% w)/sum(w))
     }
 
+    # execution time
+    final$exec.time <- numeric(length(dat))
+    sapply(1:length(dat), function(i)
+        if(is.null(results[[i]]$exec.time)) final$exec.time[i] <<- NA else
+            final$exec.time[i] <<- results[[i]]$exec.time)
+
     if(display){
         ranges <- as.vector(unlist(likelihoods))
         plot(1,1,
