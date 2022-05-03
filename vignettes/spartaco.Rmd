@@ -16,7 +16,7 @@ knitr::opts_chunk$set(
 
 In this vignette, we show the use of the SpaRTaCo model (*Sottosanti and Risso, 2021+*), to analyze 10X Visium spatial experiments. The following analysis is highly computationally expensive and for this reason it has been run locally and further uploaded.
 
-# spatialLIBD data: subject 151673
+## spatialLIBD data: subject 151673
 
 We display the same analysis proposed by *Sottosanti and Risso (2021+)* using a human dorsolateral prefrontal cortex tissue sample collected by *Maynard et al. (2021)*.
 
@@ -80,3 +80,14 @@ ggplot(DeviancePlot, aes(x, y))+geom_line()+
   scale_color_manual( values = c('Ideal cut-off' = 4, 'Actual cut-off' = 2))+
   theme(legend.position = "bottom")
 ```
+
+Last, the transformed data correspond to the deviance residuals.
+
+```{r, eval=F}
+spe <- nullResiduals(spe, assay="counts", fam = "binomial", type = "deviance")
+spe <- spe[1:500,]
+```
+
+
+### SpaRTaCo model fitting
+

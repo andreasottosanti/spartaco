@@ -20,7 +20,10 @@ Description:
     samples. It can be used to identify clusters of genes which are spatially expressed only in some specific tissue areas in spatial transcriptomic studies.
 Imports:
     Matrix,
-    invgamma
+    invgamma,
+    ggplot2,
+	coda,
+	SpatialExperiment
 License: Artistic-2.0
 URL: https://github.com/andreasottosanti/spartaco
 BugReports: https://support.bioconductor.org/t/spartaco
