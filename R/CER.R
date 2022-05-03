@@ -1,6 +1,6 @@
 #' Classification Error Rate (CER)
 #'
-#' This function returns the classification error rate (CER) as a measure of the discrepancy between the reference and the estimated classifications.
+#' This function returns the classification error rate (CER, *Witten and Tibshirani, 2010*) as a measure of the discrepancy between a reference classification and an estimated classification.
 #'
 #' @export
 #'
@@ -11,16 +11,13 @@
 #'@return The function returns the CER. The closer is the value to 0,
 #'the better is the estimated classification with respect to the reference one.
 
-#CER <- function(reference, estimate){
-#    mP <- mQ <- matrix(0, length(reference), length(reference))
-#    for(i in 1:(length(reference)-1)){
-#        for(j in (i+1):length(reference)){
-#            if(reference[i] == reference[j]) mP[i,j] <- mP[j,i] <- 1
-#            if(estimate[i] == estimate[j]) mQ[i,j] <- mQ[j,i] <- 1
-#        }
-#    }
-#    return(sum(abs(mP[lower.tri(mP)]-mQ[lower.tri(mQ)]))/(length(reference)*(length(reference)-1)/2))
-#}
+#' @references
+#' Witten, D. M. and Tibshirani, R. (2010). A Framework for Feature Selection in Clustering. *Journal of the American Statistical Association* **105** 713-726.
+
+#' @examples
+#' a <- c(1, 0, 0, 1, 1)
+#' b <- c(1, 1, 0, 1, 1)
+#' CER(a, b)
 
 CER <- function(reference, estimate){
     if(length(reference) != length(estimate)) stop("The two objects have different length")

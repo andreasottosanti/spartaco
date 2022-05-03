@@ -4,22 +4,25 @@
 \alias{PCA.Kmeans.KR}
 \title{PCA K-means model selection}
 \usage{
-PCA.Kmeans.KR(x, K.max, R.max, continuity = F)
+PCA.Kmeans.KR(x, K.max = 50, R.max = 50, continuity = F)
 }
 \arguments{
 \item{x}{the data matrix;}
 
-\item{K.max}{the maximum number of row clusters to evaluate;}
+\item{K.max}{the maximum number of row clusters to evaluate (default 50);}
 
-\item{R.max}{the maximum number of column clusters to evaluate.}
+\item{R.max}{the maximum number of column clusters to evaluate (default 50);}
 
-\item{continuity}{if \code{TRUE}, the change point linear model is fitted under the constraint that the function is continuous in the change point.}
+\item{continuity}{if \code{TRUE}, the change point linear model is fitted under the constraint that the function is continuous into the change point.}
 }
 \value{
 A list containing the values of \code{K} and \code{R} selected and the clustering labels with the
 selected dimensions.
 }
 \description{
-This function returns the estimated number of row and column clusters by first applying a PCA on the data,
+This function returns the estimated number of row and column clusters of a data matrix by first applying a PCA,
 and then determining the best K-means model based on a change point model fitted on the total within sum of squares.
+}
+\references{
+Sottosanti, A. and Risso, D. (2021+) Co-clustering of Spatially Resolved Transcriptomic Data \href{https://arxiv.org/abs/2110.04872}{(preprint)}
 }

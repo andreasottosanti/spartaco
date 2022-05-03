@@ -7,20 +7,23 @@
 #' @import coda
 #' @export
 #'
-#' @param x A `spartaco` object;
-#' @param gene.names A vector of length `nrow(x$x)`, containing the names of the genes. If `NULL`, the function takes `gene.names = row.names(x$x)`.
-#' @param HPD.interval A list containing the options for computing the random parameters high posterior density intervals. The  level is given by `HPD.interval$level` (default `0.95`).
-#' The intervals are computed numerically via MCMC; the number of draws used for the simulation can be set with `HPD.interval$level` (default is `10^4`).
-#' If `HPD.interval = NULL`, the intervals are not computed.
+#' @param x an object of class `spartaco`;
+#' @param gene.names a vector of length `nrow(x$x)`, containing the gene names. If `NULL`, the function takes `gene.names = row.names(x$x)`.
+#' @param MCMC.interval a list of length 2 containing the options for computing the high posterior density intervals of the gene specific variances. The  level is given by `MCMC.interval$level` (default `0.95`).
+#' Intervals are computed via MCMC; the number of simulated draws must is passed to `MCMC.interval$level` (default is `10^4`).
+#' If `NULL`, the intervals are computed as mean + c(-1.96,1.96)*sd, and the function returns a warning.
 #'
-#' @return A list of five elements:
+#' @return An object of class `spartaco.genes` containing five elements:
 #' - `Expectation`: a data frame of dimension `nrow(x$x)` x `R` containing the expected values of the random effects within the `R` spot clusters;
 #' - `Variance`: a data frame of dimension `nrow(x$x)` x `R` containing the variance of the random effects within the `R` spot clusters;
-#' - `HPD.left`: a data frame of dimension `nrow(x$x)` x `R` containing the left HPD interval of the random effects within the `R` spot clusters (only if `!is.null(HPD.interval)`);
-#' - `HPD.right` a data frame of dimension `nrow(x$x)` x `R` containing the right HPD interval of the random effects within the `R` spot clusters (only if `!is.null(HPD.interval)`);
-#' - `Cs`: the row clustering labels (they are the same passed as input into `x$Cs`).
+#' - `HPD.left`: a data frame of dimension `nrow(x$x)` x `R` containing the left HPD interval of the random effects within the `R` spot clusters;
+#' - `HPD.right` a data frame of dimension `nrow(x$x)` x `R` containing the right HPD interval of the random effects within the `R` spot clusters;
+#' - `Cs`: the row clustering labels (the same contained into the object `x`).
 #'
-#' More details on how to access the random parameter estimates are given in the Examples.
+#' More details on how to access the random parameter estimates are given in the **Examples**.
+#'
+#' @references
+#'  Sottosanti, A. and Risso, D. (2021+) Co-clustering of Spatially Resolved Transcriptomic Data [(preprint)](https://arxiv.org/abs/2110.04872)
 #'
 #' @examples
 #' library(spartaco)
@@ -41,7 +44,7 @@
 #' sigma2$HPD.left[sigma2$Cs == k,r]
 #' sigma2$HPD.right[sigma2$Cs == k,r]
 
-GeneVariances <- function(x, gene.names = NULL, HPD.interval = list(level = .95, R = 10^4)){
+GeneVariances <- function(x, gene.names = NULL, MCMC.interval = list(level = .95, R = 10^4)){
     if(class(x) != "spartaco") stop("x is not a spartaco object")
     X <- x$x
     coordinates <- x$coord
@@ -63,11 +66,11 @@ GeneVariances <- function(x, gene.names = NULL, HPD.interval = list(level = .95,
         rownames(Variance.post) <- gene.names
     colnames(Alpha.post) <- colnames(Beta.post) <- colnames(Expected.post) <-
         colnames(Variance.post) <- paste("r =",1:R)
-    if(!is.null(HPD.interval)){
-        Inter.low <- Inter.up <- data.frame(matrix(0, nrow(X), R))
-        rownames(Inter.low) <- rownames(Inter.up) <- gene.names
-        colnames(Inter.low) <- colnames(Inter.up) <- paste("r =",1:R)
-    }
+
+    Inter.low <- Inter.up <- data.frame(matrix(0, nrow(X), R))
+    rownames(Inter.low) <- rownames(Inter.up) <- gene.names
+    colnames(Inter.low) <- colnames(Inter.up) <- paste("r =",1:R)
+
     for(k in sort(unique(Cs))){
         for(r in 1:R){
             eig.r <- eigen(expDist[Ds == r, Ds == r]^(1/Phi[r]))
@@ -77,17 +80,20 @@ GeneVariances <- function(x, gene.names = NULL, HPD.interval = list(level = .95,
             Beta.post[Cs == k,r] <- (Block1 * Block1) %*% invD/2 + Beta[k, r]
             Expected.post[Cs == k,r] <- ifelse(Alpha.post[Cs == k,r]>1, Beta.post[Cs == k,r]/(Alpha.post[Cs == k,r]-1), Inf)
             Variance.post[Cs == k,r] <- ifelse(Alpha.post[Cs == k,r]>2, Beta.post[Cs == k,r]^2/((Alpha.post[Cs == k,r]-1)^2 * (Alpha.post[Cs == k,r]-2)), Inf)
-            if(!is.null(HPD.interval)){
+            if(!is.null(MCMC.interval)){
                 for(i in 1:sum(Cs == k)){
-                    gen <- rinvgamma(HPD.interval$R, shape = Alpha.post[Cs == k,r][i], rate = Beta.post[Cs == k,r][i])
-                    interv <- HPDinterval(obj = mcmc(gen), prob = HPD.interval$level)
+                    gen <- rinvgamma(MCMC.interval$R, shape = Alpha.post[Cs == k,r][i], rate = Beta.post[Cs == k,r][i])
+                    interv <- HPDinterval(obj = mcmc(gen), prob = MCMC.interval$level)
                     Inter.low[Cs == k,r][i] <- interv[1]
                     Inter.up[Cs == k,r][i] <- interv[2]
                 }
+            } else {
+                Inter.low[,r] <- Expected.post[,r] - 2*sqrt(Variance.post[,r])
+                Inter.up[,r] <- Expected.post[,r] + 2*sqrt(Variance.post[,r])
             }
         }
     }
-    if(is.null(HPD.interval)) Inter.low <- Inter.up <- NULL
+    if(is.null(MCMC.interval)) warning("the HPD intervals returned are approximated as mean + c(-1.96,1.96)*sd")
     output <- list(Expectation = Expected.post,
                    Variance = Variance.post,
                    HPD.left = Inter.low,

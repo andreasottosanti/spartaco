@@ -7,29 +7,29 @@
 GeneVariances(
   x,
   gene.names = NULL,
-  HPD.interval = list(level = 0.95, R = 10^4)
+  MCMC.interval = list(level = 0.95, R = 10^4)
 )
 }
 \arguments{
-\item{x}{A \code{spartaco} object;}
+\item{x}{an object of class \code{spartaco};}
 
-\item{gene.names}{A vector of length \code{nrow(x$x)}, containing the names of the genes. If \code{NULL}, the function takes \code{gene.names = row.names(x$x)}.}
+\item{gene.names}{a vector of length \code{nrow(x$x)}, containing the gene names. If \code{NULL}, the function takes \code{gene.names = row.names(x$x)}.}
 
-\item{HPD.interval}{A list containing the options for computing the random parameters high posterior density intervals. The  level is given by \code{HPD.interval$level} (default \code{0.95}).
-The intervals are computed numerically via MCMC; the number of draws used for the simulation can be set with \code{HPD.interval$level} (default is \code{10^4}).
-If \code{HPD.interval = NULL}, the intervals are not computed.}
+\item{MCMC.interval}{a list of length 2 containing the options for computing the high posterior density intervals of the gene specific variances. The  level is given by \code{MCMC.interval$level} (default \code{0.95}).
+Intervals are computed via MCMC; the number of simulated draws must is passed to \code{MCMC.interval$level} (default is \code{10^4}).
+If \code{NULL}, the intervals are computed as mean + c(-1.96,1.96)*sd, and the function returns a warning.}
 }
 \value{
-A list of five elements:
+An object of class \code{spartaco.genes} containing five elements:
 \itemize{
 \item \code{Expectation}: a data frame of dimension \code{nrow(x$x)} x \code{R} containing the expected values of the random effects within the \code{R} spot clusters;
 \item \code{Variance}: a data frame of dimension \code{nrow(x$x)} x \code{R} containing the variance of the random effects within the \code{R} spot clusters;
-\item \code{HPD.left}: a data frame of dimension \code{nrow(x$x)} x \code{R} containing the left HPD interval of the random effects within the \code{R} spot clusters (only if \code{!is.null(HPD.interval)});
-\item \code{HPD.right} a data frame of dimension \code{nrow(x$x)} x \code{R} containing the right HPD interval of the random effects within the \code{R} spot clusters (only if \code{!is.null(HPD.interval)});
-\item \code{Cs}: the row clustering labels (they are the same passed as input into \code{x$Cs}).
+\item \code{HPD.left}: a data frame of dimension \code{nrow(x$x)} x \code{R} containing the left HPD interval of the random effects within the \code{R} spot clusters;
+\item \code{HPD.right} a data frame of dimension \code{nrow(x$x)} x \code{R} containing the right HPD interval of the random effects within the \code{R} spot clusters;
+\item \code{Cs}: the row clustering labels (the same contained into the object \code{x}).
 }
 
-More details on how to access the random parameter estimates are given in the Examples.
+More details on how to access the random parameter estimates are given in the \strong{Examples}.
 }
 \description{
 This function returns the summary statistics for the random variances estimated through SpaRTaCo within the \code{K*R} blocks.
@@ -52,4 +52,7 @@ sigma2$Variance[sigma2$Cs == k,r]
 # To access the HPD interval limits of the genes within the kr-th block:
 sigma2$HPD.left[sigma2$Cs == k,r]
 sigma2$HPD.right[sigma2$Cs == k,r]
+}
+\references{
+Sottosanti, A. and Risso, D. (2021+) Co-clustering of Spatially Resolved Transcriptomic Data \href{https://arxiv.org/abs/2110.04872}{(preprint)}
 }

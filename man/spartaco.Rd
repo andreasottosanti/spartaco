@@ -5,8 +5,9 @@
 \title{SpaRTaCo co-clustering}
 \usage{
 spartaco(
-  x,
-  coordinates,
+  data,
+  coordinates = NULL,
+  assay = NULL,
   K = NULL,
   R = NULL,
   Delta.constr = 10,
@@ -22,13 +23,15 @@ spartaco(
 )
 }
 \arguments{
-\item{x}{the input data matrix.}
+\item{data}{either a \code{SpatialExperiment} object or a matrix containing the experiment;}
 
-\item{coordinates}{the matrix of spatial coordinates of dimension ncol(x) x 2.}
+\item{coordinates}{if \code{is.matrix(data)}, it takes the matrix of spatial coordinates of dimension \code{ncol(data)} x 2.}
 
-\item{K}{the number of row clusters (when \code{input.values = NULL}).}
+\item{assay}{if \code{class(data) == "SpatialExperiment"}, it takes either the name or the index of the assay to be used;}
 
-\item{R}{the number of column clusters (when \code{input.values = NULL}).}
+\item{K}{the number of row clusters (only when \code{input.values == NULL}).}
+
+\item{R}{the number of column clusters (only when \code{input.values == NULL}).}
 
 \item{Delta.constr}{the constraint on the Delta matrix (default is 10; see \strong{Details}).}
 
@@ -64,8 +67,8 @@ The algorithm can be initiated from a given set of starting values. To do so, \c
 \itemize{
 \item \code{mu}, \code{tau}, \code{xi}, \code{alpha} and \code{beta} are \code{K} x \code{R} matrices;
 \item \code{phi} is a vector of length \code{R};
-\item \code{Cs} is a vector of length \code{nrow(x)} containing the row clustering labels;
-\item \code{Ds} is a vector of length \code{ncol(x)} containing the column clustering labels.
+\item \code{Cs} is a vector of length \code{nrow(data)} containing the row clustering labels;
+\item \code{Ds} is a vector of length \code{ncol(data)} containing the column clustering labels.
 }
 
 If the algorithm is initiated from some starting values,  \code{K} and \code{R} are set automatically according to the input values.
@@ -78,13 +81,21 @@ The function allows also to save the results even if the estimation is not compl
 }
 \examples{
 library(spartaco)
+
+# When x is a matrix:
 x <- matrix(runif(n*p), n, p)
 coordinates <- matrix(runif(2*p), p, 2)
-output <- spartaco(x = x, coordinates = coordinates, K = K, R = R)
+output <- spartaco(data = x, coordinates = coordinates, K = K, R = R)
+
+# When x is an object of class "SpatialExperiment":
+library(spatialLIBD)
+ehub <- ExperimentHub::ExperimentHub()
+if (!exists("spe")) spe <- fetch_data(type = "spe", eh = ehub)
+output <- spartaco(data = spe, assay = 2, K = K, R = R)
 
 # To start the algorithm from the output of a previous run
-output2 <- spartaco(x = x, coordinates = coordinates, input.val = output)
+output2 <- spartaco(data = x, coordinates = coordinates, input.val = output)
 }
 \references{
-Sottosanti, A. and Risso, D. (2021) Co-clustering of Spatially Resolved Transcriptomic Data \href{https://arxiv.org/abs/2110.04872}{(preprint)}
+Sottosanti, A. and Risso, D. (2021+) Co-clustering of Spatially Resolved Transcriptomic Data \href{https://arxiv.org/abs/2110.04872}{(preprint)}
 }

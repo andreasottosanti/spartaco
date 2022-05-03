@@ -2,13 +2,14 @@
 #'
 #' This function returns the estimated model parameters and the co-clustering labels.
 #'
-# #' @import SpatialExperiment
+#' @import SpatialExperiment
 #' @export
 #'
-#' @param x the input data matrix.
-#' @param coordinates the matrix of spatial coordinates of dimension ncol(x) x 2.
-#' @param K the number of row clusters (when `input.values = NULL`).
-#' @param R the number of column clusters (when `input.values = NULL`).
+#' @param data either a `SpatialExperiment` object or a matrix containing the experiment;
+#' @param coordinates if `is.matrix(data)`, it takes the matrix of spatial coordinates of dimension `ncol(data)` x 2.
+#' @param assay if `class(data) == "SpatialExperiment"`, it takes either the name or the index of the assay to be used;
+#' @param K the number of row clusters (only when `input.values == NULL`).
+#' @param R the number of column clusters (only when `input.values == NULL`).
 #' @param Delta.constr the constraint on the Delta matrix (default is 10; see **Details**).
 #' @param max.iter the maximum number of iterations the estimation algorithm is run.
 #' @param metropolis.iterations the number of iterations within each SE Step.
@@ -30,8 +31,8 @@
 #' `list(mu, tau, xi, alpha, beta, phi, Cs, Ds)`, where:
 #' - `mu`, `tau`, `xi`, `alpha` and `beta` are `K` x `R` matrices;
 #' - `phi` is a vector of length `R`;
-#' - `Cs` is a vector of length `nrow(x)` containing the row clustering labels;
-#' - `Ds` is a vector of length `ncol(x)` containing the column clustering labels.
+#' - `Cs` is a vector of length `nrow(data)` containing the row clustering labels;
+#' - `Ds` is a vector of length `ncol(data)` containing the column clustering labels.
 #'
 #' If the algorithm is initiated from some starting values,  `K` and `R` are set automatically according to the input values.
 #' If an object of class `spartaco` is passed to `input.values`, the estimation starts from the final estimate of the previous run (see **Examples**).
@@ -44,18 +45,28 @@
 # \deqn{p(x) = \frac{\lambda^x e^{-\lambda}}{x!}}{%p(x) = \lambda^x exp(-\lambda)/x!} for \eqn{x = 0, 1, 2, \ldots}
 
 #' @references
-#' Sottosanti, A. and Risso, D. (2021) Co-clustering of Spatially Resolved Transcriptomic Data [(preprint)](https://arxiv.org/abs/2110.04872)
+#' Sottosanti, A. and Risso, D. (2021+) Co-clustering of Spatially Resolved Transcriptomic Data [(preprint)](https://arxiv.org/abs/2110.04872)
 
 #' @examples
 #' library(spartaco)
+#'
+#' # When x is a matrix:
 #' x <- matrix(runif(n*p), n, p)
 #' coordinates <- matrix(runif(2*p), p, 2)
-#' output <- spartaco(x = x, coordinates = coordinates, K = K, R = R)
+#' output <- spartaco(data = x, coordinates = coordinates, K = K, R = R)
+#'
+#' # When x is an object of class "SpatialExperiment":
+#' library(spatialLIBD)
+#' ehub <- ExperimentHub::ExperimentHub()
+#' if (!exists("spe")) spe <- fetch_data(type = "spe", eh = ehub)
+#' output <- spartaco(data = spe, assay = 2, K = K, R = R)
 #'
 #' # To start the algorithm from the output of a previous run
-#' output2 <- spartaco(x = x, coordinates = coordinates, input.val = output)
-spartaco <- function(x,
-                     coordinates,
+#' output2 <- spartaco(data = x, coordinates = coordinates, input.val = output)
+
+spartaco <- function(data,
+                     coordinates = NULL,
+                     assay = NULL,
                      K = NULL,
                      R = NULL,
                      Delta.constr = 10,
@@ -69,6 +80,16 @@ spartaco <- function(x,
                      save.options = NULL,
                      seed = NULL
                      ) {
+
+    if(class(data) == "SpatialExperiment"){
+        if(is.numeric(assay)) which.assay <- assay
+            else which.assay <- which(names(data@assays@data) == assay)
+        x <- as.matrix(data@assays@data[[which.assay]])
+        row.names(x) <- rowData(data)$gene_name
+        coordinates <- as.matrix(spatialCoords(data))
+    } else {
+        x <- data
+    }
 
     set.seed(seed = seed)
 

@@ -2,29 +2,61 @@
 % Please edit documentation in R/plotspartacogenes.R
 \name{plot.spartaco.genes}
 \alias{plot.spartaco.genes}
-\title{Plot the gene-specific variances given by SpaRTaCo}
+\title{Plot the gene-specific variances}
 \usage{
 \method{plot}{spartaco.genes}(
   x,
   r = 1:ncol(x$Expectation),
-  display.plots = T,
   g = 5,
-  angle = 45,
-  gene.label.size = 4,
-  hjust = 0,
-  vjust = 0
+  return.plots = T,
+  plot.labels = list(angle = 45, size = 4, hjust = 0, vjust = 0)
 )
 }
 \arguments{
-\item{x}{a \code{spartaco.genes} object;}
+\item{x}{an object of class \code{spartaco.genes};}
 
-\item{g}{if not \code{NULL}, it is the number of genes in decreasing order of the expected value whose names are displayed.}
+\item{r}{the spot clusters to be displayed (by default, they are all displayed);}
 
-\item{use.gene.clusters}{if \code{TRUE}, it returns the plots for every row cluster.}
+\item{g}{the number of highly variable genes in each spot cluster to be highligthed.}
+
+\item{return.plots}{if \code{FALSE}, it returns only the data frame containing the \code{g} most variable genes into the spot clusters given by \code{r}.}
+
+\item{plot.labels}{a list containing the plot parameters of the most variable genes labels (see \strong{Details}).}
 }
 \value{
-The requested plots are displayed. In addition, if assigned to an object, it will return the \code{ggplot} object.
+If \code{return.plots == T}, it returns the requested plots as \code{ggplot} objects. In addition, if \code{g > 0}, it returns a list of the top \code{g} highly variable genes in each spot cluster.
 }
 \description{
-This function returns the ggplots of the distribution of the gene variances estimated by SpaRTaCo.
+This function returns the ggplots of the distribution of the gene-specific variances within the spot clusters discovered by SpaRTaCo.
+In addition, it returns a data frame with the most variable genes in each of the spot clusters requested.
+}
+\details{
+When \code{g > 0}, the posterior distribution of top \code{g} genes with the largest expectations are displayed in red. In addition, a label with the gene names is placed close to each distribution.
+The plot parameters of the labels are passed to \code{plot.labels}, that is a list of four elements:
+\itemize{
+\item \code{angle} gives the rotation of the labels;
+\item \code{size} gives the size of the labels;
+\item \code{hjust} gives the horizontal adjustment;
+\item \code{vjust} gives the vertical adjustment.
+}
+
+You can modify just some of the four parameters, without need to redefine the entire list.
+}
+\examples{
+library(spartaco)
+# Not run:
+# x <- matrix(runif(n*p), n, p)
+# coordinates <- matrix(runif(2*p), p, 2)
+# output <- spartaco(x = x, coordinates = coordinates, K = K, R = R)
+
+sigma2 <- GeneVariances(output)
+
+# To plot the first 10 highly variable genes within each spot cluster:
+plot(sigma2, g = 10)
+
+# To plot the first 10 highly variable genes within the spot clusters 1 and 3 (let us assume `p>=3`):
+plot(sigma2, g = 10, r = c(1, 3))
+}
+\references{
+Sottosanti, A. and Risso, D. (2021+) Co-clustering of Spatially Resolved Transcriptomic Data \href{https://arxiv.org/abs/2110.04872}{(preprint)}
 }

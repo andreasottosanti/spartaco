@@ -1,20 +1,25 @@
 #' PCA K-means model selection
 #'
-#' This function returns the estimated number of row and column clusters by first applying a PCA on the data,
+#' This function returns the estimated number of row and column clusters of a data matrix by first applying a PCA,
 #' and then determining the best K-means model based on a change point model fitted on the total within sum of squares.
 #'
 # #' @import SpatialExperiment
 #' @export
 #'
 #' @param x the data matrix;
-#' @param K.max the maximum number of row clusters to evaluate;
-#' @param R.max the maximum number of column clusters to evaluate.
-#' @param continuity if `TRUE`, the change point linear model is fitted under the constraint that the function is continuous in the change point.
+#' @param K.max the maximum number of row clusters to evaluate (default 50);
+#' @param R.max the maximum number of column clusters to evaluate (default 50);
+#' @param continuity if `TRUE`, the change point linear model is fitted under the constraint that the function is continuous into the change point.
 #'
 #' @return A list containing the values of `K` and `R` selected and the clustering labels with the
 #' selected dimensions.
 #'
-PCA.Kmeans.KR <- function(x, K.max, R.max, continuity = F){
+#' @references
+#'
+#' Sottosanti, A. and Risso, D. (2021+) Co-clustering of Spatially Resolved Transcriptomic Data [(preprint)](https://arxiv.org/abs/2110.04872)
+#'
+
+PCA.Kmeans.KR <- function(x, K.max = 50, R.max = 50, continuity = F){
     K.range <- 1:K.max
     R.range <- 1:R.max
     pc.row <- prcomp(x, center = T, retx = T)$x[,1:2]

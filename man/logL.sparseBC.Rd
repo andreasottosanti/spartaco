@@ -4,24 +4,47 @@
 \alias{logL.sparseBC}
 \title{Log-likelihood and ICL of the Sparse Biclustering model}
 \usage{
-logL.sparseBC(x, results = NULL, Cs = NULL, Ds = NULL, mu = NULL, lambda = 0)
+logL.sparseBC(x, lambda, results = NULL, Cs = NULL, Ds = NULL, mu = NULL)
 }
 \arguments{
 \item{x}{the data matrix;}
 
+\item{lambda}{the penalization parameter;}
+
 \item{results}{an object of class \code{sparseBC};}
 
-\item{Cs}{the row clustering labels (only if \code{results = NULL});}
+\item{Cs}{the row clustering labels (only if \code{results == NULL});}
 
-\item{Ds}{the column clustering labels (only if \code{results = NULL});}
+\item{Ds}{the column clustering labels (only if \code{results == NULL});}
 
-\item{mu}{the \code{K}x\code{R} matrix containing the co-cluster centroids (only if \code{results = NULL});}
-
-\item{lambda}{the penalization parameter (only if \code{results = NULL});}
+\item{mu}{the \code{K} x \code{R} matrix containing the co-cluster centroids (only if \code{results == NULL});}
 }
 \value{
-A list containing the log-likelihood, the ICL and the ML estimate of the scale parameter.
+A list containing the log-likelihood, the ICL and the ML estimate of the scale parameter, that it is same for every block.
 }
 \description{
-This function computes the log-likelihood and the ICL of the Sparse Biclustering model of Tan & Witten (2014).
+This function computes the log-likelihood and the ICL of a sparse biclustering model (see \emph{Tan and Witten, 2014}). The ICL is computed as described by \emph{Sottosanti and Risso (2021+)}.
+}
+\details{
+If an object of class \code{sparseBC} is passed to \code{results}, the values of \code{Cs}, \code{Ds} and \code{mu}. The penalization \code{lambda} needs always to be specified, as it cannot be extracted from the \code{sparseBC} object.
+}
+\examples{
+library(spartaco)
+library(sparseBC)
+
+x <- matrix(runif(n*p), n, p)
+results <- sparseBC(x, k = k, r = r, lambda = lambda)
+
+The following lines are equivalent:
+logL.sparseBC(x = x, results = results, lambda = lambda)
+logL.sparseBC(x = x, Cs = results$Cs, Ds = results$Ds, mu = results$Mus, lambda = lambda)
+
+}
+\references{
+Sottosanti, A. and Risso, D. (2021+) Co-clustering of Spatially Resolved Transcriptomic Data \href{https://arxiv.org/abs/2110.04872}{(preprint)}.
+
+Tan, K. M., and Witten, D. M. (2014) Sparse biclustering of transposable data. \emph{Journal of Computational and Graphical Statistics} \strong{23(4)} 985-1008.
+}
+\seealso{
+\code{\link[sparseBC:sparseBC]{sparseBC::sparseBC()}}
 }
