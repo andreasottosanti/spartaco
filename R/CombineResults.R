@@ -1,14 +1,19 @@
 #' Manually combine multiple runs of SpaRTaCo
 #'
 #' This function combines multiple runs of SpaRTaCo with the same values of K and R.
-#'
+
+#' @import ggplot2
 #' @export
 #'
-#' @param x a vector containing the names of the files to be combined;
+#' @param x either a list of `spartaco` objects or a vector containing the names of the files to be combined;
 #' @param search.dir the directory path where the file names given by `x` are searched. If `NULL`, the file paths must be specified as part of the file names is `x`;
 #' @param compute.uncertainty if `TRUE` (default), it computes the clustering uncertainty of the rows and of the columns.
 #'
 #' @return an object of class `spartaco` with the parameter estimates and the clustering labels given by the best fit across the ones in `x`. If `compute.uncertainty == T`, the clustering uncertainty measures are returned.
+#'
+#' @details If each element of `x` is an object of class `spartaco`, then the function combines them into a unique spartaco object.
+#' If the `spartaco` objects are stored into different files, the vector `x` receives the names of the files,
+#' and `search.dir` is the path of the directory where the files are stored.
 
 #' @references
 #' Sottosanti, A. and Risso, D. (2021+) Co-clustering of Spatially Resolved Transcriptomic Data [(preprint)](https://arxiv.org/abs/2110.04872)
@@ -35,24 +40,19 @@ CombineSpartaco <- function(x = NULL, #KR = NULL,
         load(fileName)
         get(ls()[ls() != "fileName"])
     }
-    #if(is.null(x)){
-    #    if(is.null(search.dir)) search.dir <- getwd()
-    #    dat <- dir(search.dir)
-    #    dat <- dat[grepl(paste("K",KR[1],"_R",KR[2], sep = ""), dat)]
-    #    cat(paste("Found", length(dat),"files in the current directory\n"))
-    #    results <- list()
-    #    for(i in 1:length(dat)) results[[i]] <- loadRData(paste(search.dir,dat[i],sep="/"))
-    #} else {
-    results <- list()
-    for(i in 1:length(x)){
-        file.name <- x[i]
-        if(!is.null(search.dir)){
-            if(substr(search.dir, nchar(search.dir),nchar(search.dir)) == "/")
-                file.name <- paste(search.dir, file.name, sep="") else
-                    file.name <- paste(search.dir, file.name, sep="/")
+
+    if(is.list(x)) results <- x else {
+        results <- list()
+        for(i in 1:length(x)){
+            file.name <- x[i]
+            if(!is.null(search.dir)){
+                if(substr(search.dir, nchar(search.dir),nchar(search.dir)) == "/")
+                    file.name <- paste(search.dir, file.name, sep="") else
+                        file.name <- paste(search.dir, file.name, sep="/")
+            }
+            results[[i]] <- loadRData(file.name)
         }
-        results[[i]] <- loadRData(file.name)}
-    #}
+    }
     likelihoods <- list()
     maxi <- rep(-Inf, length(results))
     final <- list()
@@ -112,19 +112,26 @@ CombineSpartaco <- function(x = NULL, #KR = NULL,
     }
 
     # execution time
-    final$exec.time <- numeric(length(dat))
-    sapply(1:length(dat), function(i)
+    final$exec.time <- numeric(length(x))
+    sapply(1:length(x), function(i)
         if(is.null(results[[i]]$exec.time)) final$exec.time[i] <<- NA else
             final$exec.time[i] <<- results[[i]]$exec.time)
 
-
-        ranges <- as.vector(unlist(likelihoods))
-        plot(1,1,
-             xlim = c(1, max(sapply(1:length(likelihoods), function(l) length(likelihoods[[l]])))),
-             ylim = c(min(ranges), max(ranges)),
-             xlab = "Iteration", ylab = expression(logL))
-        for(i in 1:length(likelihoods))
-            points(1:length(likelihoods[[i]]), likelihoods[[i]], col = i, pch = i)
+    ChainPlot <- data.frame(
+        ranges = as.vector(unlist(likelihoods)),
+        iterations = as.vector(unlist(sapply(1:length(x), function(j) 1:length(likelihoods[[j]])))),
+        chains = as.factor(as.vector(unlist(sapply(1:length(x), function(j) rep(j, length(likelihoods[[j]]))))))
+    )
+    final$ll.plot <- ggplot(ChainPlot, aes(iterations, ranges, col = chains))+geom_point()+
+        theme_classic()+theme(legend.position = "bottom")+
+        labs(x = "iteration", y = "classification log-likelihood", color = "run")
+    plot(final$ll.plot)
+       # plot(1,1,
+        #     xlim = c(1, max(sapply(1:length(likelihoods), function(l) length(likelihoods[[l]])))),
+        #     ylim = c(min(ranges), max(ranges)),
+        #     xlab = "Iteration", ylab = expression(logL))
+        #for(i in 1:length(likelihoods))
+        #    points(1:length(likelihoods[[i]]), likelihoods[[i]], col = i, pch = i)
 
     class(final) <- "spartaco"
     return(final)

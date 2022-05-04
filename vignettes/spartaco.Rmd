@@ -88,6 +88,14 @@ spe <- nullResiduals(spe, assay="counts", fam = "binomial", type = "deviance")
 spe <- spe[1:500,]
 ```
 
+This quantity is not available as an assay of the `spe` object.
 
 ### SpaRTaCo model fitting
 
+We run SpaRTaCo for 3,000 iterations, starting from five different sets of initial points. Since `spe` is an object of class `SpatialExperiment`, it can be used directly into the function for estimating the model.
+
+```{r, eval = F}
+results <- spartaco_multirun(spe, assay = "binomial_deviance_residuals", K = 2, R = 9, nstart = 5, max.iter = 3000, mc.cores = 5)
+```
+
+The function immediately produces a plot of the log-likelihood values

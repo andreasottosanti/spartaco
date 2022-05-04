@@ -7,7 +7,7 @@
 CombineSpartaco(x = NULL, search.dir = NULL, compute.uncertainty = T)
 }
 \arguments{
-\item{x}{a vector containing the names of the files to be combined;}
+\item{x}{either a list of \code{spartaco} objects or a vector containing the names of the files to be combined;}
 
 \item{search.dir}{the directory path where the file names given by \code{x} are searched. If \code{NULL}, the file paths must be specified as part of the file names is \code{x};}
 
@@ -18,6 +18,11 @@ an object of class \code{spartaco} with the parameter estimates and the clusteri
 }
 \description{
 This function combines multiple runs of SpaRTaCo with the same values of K and R.
+}
+\details{
+If each element of \code{x} is an object of class \code{spartaco}, then the function combines them into a unique spartaco object.
+If the \code{spartaco} objects are stored into different files, the vector \code{x} receives the names of the files,
+and \code{search.dir} is the path of the directory where the files are stored.
 }
 \examples{
 library(spartaco)
