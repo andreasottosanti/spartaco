@@ -1,5 +1,5 @@
 ---
-title: "Simultaneous clustering of the genes and the spots of a 10X Visium spatial experiment using SpaRTaCo"
+title: "Simultaneous clustering of genes and spots in 10X Visium spatial experiments using SpaRTaCo"
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{real data analysis}
