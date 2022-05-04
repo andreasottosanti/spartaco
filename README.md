@@ -17,7 +17,7 @@ Install the development version from
 [GitHub](https://github.com/andreasottosanti/spartaco) with:
 
 ``` r
-BiocManager::install("andreasottosanti/spartaco")
+remotes::install_github("andreasottosanti/spartaco", build_vignettes = T)
 ```
 
 ## Run the model
