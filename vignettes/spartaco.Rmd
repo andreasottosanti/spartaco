@@ -101,5 +101,8 @@ results <- spartaco_multirun(spe, assay = "binomial_deviance_residuals", K = 2, 
 To run SpaRTaCo with multiple dimensions, one could use the function `parallel::mclapply`. Let us suppose for example that we evaluate the range of column clusters from 7 to 12. Note that, in order to perform each single estimation in parallel, we need 30 cores.
 
 ```{r, eval = F}
-multiresults <- parallel::mclapply(7:12, function(r)
-  spartaco_multirun(data = spe, assay = "binomial_deviance_residuals", K = 2, R = r, nstart = 5, max.iter = 3000, mc.cores = 5), mc.cores = length(7:12))
+R.values <- 7:12
+multiresults <- parallel::mclapply(R.values, function(r)
+  spartaco_multirun(data = spe, assay = "binomial_deviance_residuals", K = 2, R = r, nstart = 5, max.iter = 3000, mc.cores = 5), mc.cores = length(R.values))
+```
+
