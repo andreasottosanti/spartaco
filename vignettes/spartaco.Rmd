@@ -24,7 +24,7 @@ We display the same analysis proposed by *Sottosanti and Risso (2021+)* using a 
 library(spartaco)
 library(ggplot2)
 library(scry)
-load("results.Rdata")
+#load("results.Rdata")
 load("DeviancePlot.Rdata")
 ```
 
@@ -122,30 +122,30 @@ sel.model <- multiresults[[which.max(ICL.values)]]
 `sel.model` is an object of class `spartaco`. The clustering labels are contained into the objects `sel.model$Cs` and `sel.model$Ds`. To display the mean levels and the spatial signal-to-noise ratios within the blocks, run
 
 
-```{r, eval = T, fig.width = 6.5, fig.height=4, fig.align="center"}
+```{r, eval = F, fig.width = 6.5, fig.height=4, fig.align="center"}
 plot(sel.model, type = 1)
 plot(sel.model, type = 2)
 ```
 
 To display the spot clusters, run
 
-```{r, eval = T, fig.width = 6.5, fig.height=5, fig.align="center"}
+```{r, eval = F, fig.width = 6.5, fig.height=5, fig.align="center"}
 plot(sel.model, type = 3)
 ```
 
 It appears that the spatial activity of the genes in $\mathcal{C}_2$ is largely evident within
-the internal area of the White Matter ($\mathcal{D}_1$, signal-to-noise ratio = `r round(sel.model$stn.ratio[2,1],2)`) and progressively decreases approaching Layer
-6 (signal-to-noise ratio of $\mathcal{D}_8$ = `r round(sel.model$stn.ratio[2,8],2)`, and signal-to-noise ratio of $\mathcal{D}_9$ = `r round(sel.model$stn.ratio[2,9],2)`).
+the internal area of the White Matter ($\mathcal{D}_1$, signal-to-noise ratio = ` round(sel.model$stn.ratio[2,1],2)`) and progressively decreases approaching Layer
+6 (signal-to-noise ratio of $\mathcal{D}_8$ = ` round(sel.model$stn.ratio[2,8],2)`, and signal-to-noise ratio of $\mathcal{D}_9$ = ` round(sel.model$stn.ratio[2,9],2)`).
 
 To display the average gene expression of the genes in $k = 2$ and within the regions $r \in \{1,8,9 \}$, run
 
-```{r, eval = T, fig.width = 6.5, fig.height=5, fig.align="center"}
+```{r, eval = F, fig.width = 6.5, fig.height=5, fig.align="center"}
 plot(sel.model, type = 4, k = 2, r = c(1,8,9))
 ```
 
 If instead you want to display the expression of a single gene (e.g. `PCP4`) in the areas $r\in\{2,7\}$, run
 
-```{r, eval = T, fig.width = 6.5, fig.height=5, fig.align="center"}
+```{r, eval = F, fig.width = 6.5, fig.height=5, fig.align="center"}
 plot(sel.model, type = 4, gene.name = "PCP4", r = c(2,7))
 ```
 
