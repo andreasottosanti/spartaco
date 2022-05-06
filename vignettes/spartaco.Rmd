@@ -24,7 +24,7 @@ We display the same analysis proposed by *Sottosanti and Risso (2021+)* using a 
 library(spartaco)
 library(ggplot2)
 library(scry)
-#load("results.Rdata")
+load("results.Rdata")
 load("DeviancePlot.Rdata")
 ```
 
@@ -122,7 +122,7 @@ sel.model <- multiresults[[which.max(ICL.values)]]
 `sel.model` is an object of class `spartaco`. The clustering labels are contained into the objects `sel.model$Cs` and `sel.model$Ds`. To display the mean levels and the spatial signal-to-noise ratios within the blocks, run
 
 
-```{r, eval = F, fig.width = 6.5, fig.height=4, fig.align="center"}
+```{r, eval = T, fig.width = 6.5, fig.height=4, fig.align="center"}
 plot(sel.model, type = 1)
 plot(sel.model, type = 2)
 ```
