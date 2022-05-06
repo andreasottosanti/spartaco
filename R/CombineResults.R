@@ -63,6 +63,7 @@ CombineSpartaco <- function(x = NULL, #KR = NULL,
             final$mu <- results[[i]]$mu
             final$tau <- results[[i]]$tau
             final$xi <- results[[i]]$xi
+            final$stn.ratio <- final$tau/final$xi
             final$alpha <- results[[i]]$alpha
             final$beta <- results[[i]]$beta
             final$phi <- results[[i]]$phi

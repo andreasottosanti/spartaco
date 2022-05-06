@@ -24,6 +24,8 @@ We display the same analysis proposed by *Sottosanti and Risso (2021+)* using a 
 library(spartaco)
 library(ggplot2)
 library(scry)
+load("results.Rdata")
+load("DeviancePlot.Rdata")
 ```
 
 
@@ -51,6 +53,10 @@ We will use the `SpatialExperiment` object; however, the same analysis can be do
 spe <- spe[,colData(spe)$sample_id == "151673"]
 ```
 
+```{r, echo = F, fig.width = 6.5, fig.height=5, fig.align="center"}
+knitr::include_graphics("151673.pdf")
+```
+
 As first, we reduce the number of genes by selecting only those whose number of counts is at least 300.
 
 ```{r, eval=F}
@@ -72,7 +78,6 @@ ggplot(DeviancePlot, aes(x, y))+geom_line()+
 ```
 
 ```{r, echo = F, fig.width = 6, fig.height=4, fig.align="center" }
-load("DeviancePlot.Rdata")
 ggplot(DeviancePlot, aes(x, y))+geom_line()+
   labs(x = "ranked genes", y = "deviance", color = "")+theme_classic()+
   geom_vline(aes(xintercept = 200, color = "Ideal cut-off"), lty = 2)+
@@ -88,7 +93,7 @@ spe <- nullResiduals(spe, assay="counts", fam = "binomial", type = "deviance")
 spe <- spe[1:500,]
 ```
 
-This quantity is not available as an assay of the `spe` object.
+This quantity is now available as an assay of the `spe` object.
 
 ### SpaRTaCo model fitting
 
@@ -104,5 +109,48 @@ To run SpaRTaCo with multiple dimensions, one could use the function `parallel::
 R.values <- 7:12
 multiresults <- parallel::mclapply(R.values, function(r)
   spartaco_multirun(data = spe, assay = "binomial_deviance_residuals", K = 2, R = r, nstart = 5, max.iter = 3000, mc.cores = 5), mc.cores = length(R.values))
+ICL.values <- unlist(lapply(multiresults, function(x) x$ICL));ICL.values
 ```
+
+From the ICL it is visible that the best model is the one with `R = 12`; however, we believe that the local maximum in correspondence of
+`R = 9` represents also a valid solution. In fact, a large value of `R` would result in too many small clusters, complicating the biological interpretation.
+
+```{r, eval = F}
+sel.model <- multiresults[[which.max(ICL.values)]]
+```
+
+`sel.model` is an object of class `spartaco`. The clustering labels are contained into the objects `sel.model$Cs` and `sel.model$Ds`. To display the mean levels and the spatial signal-to-noise ratios within the blocks, run
+
+
+```{r, eval = T, fig.width = 6.5, fig.height=4, fig.align="center"}
+plot(sel.model, type = 1)
+plot(sel.model, type = 2)
+```
+
+To display the spot clusters, run
+
+```{r, eval = T, fig.width = 6.5, fig.height=5, fig.align="center"}
+plot(sel.model, type = 3)
+```
+
+It appears that the spatial activity of the genes in $\mathcal{C}_2$ is largely evident within
+the internal area of the White Matter ($\mathcal{D}_1$, signal-to-noise ratio = `r round(sel.model$stn.ratio[2,1],2)`) and progressively decreases approaching Layer
+6 (signal-to-noise ratio of $\mathcal{D}_8$ = `r round(sel.model$stn.ratio[2,8],2)`, and signal-to-noise ratio of $\mathcal{D}_9$ = `r round(sel.model$stn.ratio[2,9],2)`).
+
+To display the average gene expression of the genes in $k = 2$ and within the regions $r \in \{1,8,9 \}$, run
+
+```{r, eval = T, fig.width = 6.5, fig.height=5, fig.align="center"}
+plot(sel.model, type = 4, k = 2, r = c(1,8,9))
+```
+
+If instead you want to display the expression of a single gene (e.g. `PCP4`) in the areas $r\in\{2,7\}$, run
+
+```{r, eval = T, fig.width = 6.5, fig.height=5, fig.align="center"}
+plot(sel.model, type = 4, gene.name = "PCP4", r = c(2,7))
+```
+
+### Visializing the highly variable genes in specific areas of the tissue
+
+
+
 

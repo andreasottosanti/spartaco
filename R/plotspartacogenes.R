@@ -106,7 +106,7 @@ plot.spartaco.genes <- function(x, r = 1:ncol(x$Expectation), g = 5, return.plot
                                   hjust = plot.labels$hjust,
                                   size = plot.labels$size, col = "black")}
                     p})
-                plot(Plots[[j]])
+                #plot(Plots[[j]])
                 } else Plots <- NULL
             j <- j + 1
     }

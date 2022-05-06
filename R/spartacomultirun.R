@@ -3,7 +3,7 @@
 #' This function returns the estimated model parameters and the co-clustering labels obtained after running SpaRTaCo multiple times in parallel.
 #'
 #' @import SpatialExperiment
-#' @import doParallel
+#' @import parallel
 #' @export
 #'
 #' @param data either a `SpatialExperiment` object or a matrix containing the experiment;
