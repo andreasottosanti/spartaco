@@ -14,11 +14,8 @@ knitr::opts_chunk$set(
 )
 ```
 
-In this vignette, we show the use of the SpaRTaCo model (*Sottosanti and Risso, 2021+*), to analyze 10X Visium spatial experiments. The following analysis is highly computationally expensive and for this reason it has been run locally and further uploaded.
+In this vignette, we show how to use  the functions of the R package `spartaco` to fit the SpaRTaCo model (*Sottosanti and Risso, 2021+*) on 10X Visium spatial experiments. We consider one of the human dorsolateral prefrontal cortex tissue samples contained into the `R` package [spatialLIBD](http://spatial.libd.org/spatialLIBD/) (click the link to have more details about the data). The following analysis is extracted from  Sottosanti and Risso's article. Note that, due to the high computational costs that the estimation of SpaRTaCo requires, most of the computations have  been run locally, and the results uploaded.
 
-## spatialLIBD data: subject 151673
-
-We display the same analysis proposed by *Sottosanti and Risso (2021+)* using a human dorsolateral prefrontal cortex tissue sample collected by *Maynard et al. (2021)*.
 
 ```{r, echo = F}
 library(spartaco)
@@ -47,23 +44,28 @@ if (!exists("sce")) sce <- fetch_data(type = "sce", eh = ehub) # SingleCellExper
 if (!exists("spe")) spe <- fetch_data(type = "spe", eh = ehub) # SpatialExperiment
 ```
 
-We will use the `SpatialExperiment` object; however, the same analysis can be done using the the object `sce`. We select the sample of interest:
+We will use the `SpatialExperiment` object; however, the same analysis can be done using the the object `sce`. Not however that the functions into the `spartaco` package are not designed to deal with `SingleCellExperiment` objects, so the experiment matrix and the spatial coordinates must be manually passed to the estimation function. We concentrate on the sample with ID 151673:
 
 ```{r, eval = F}
 spe <- spe[,colData(spe)$sample_id == "151673"]
+vis_clus(spe = spe, sampleid = "151673", clustervar = "layer_guess_reordered", colors = libd_layer_colors,
+         ... = " LIBD Layers")+theme(plot.title = element_text(hjust = .5))
 ```
 
-```{r, echo = F, fig.width = 6.5, fig.height=5, fig.align="center"}
+```{r, echo = F, width = 10, height=10, fig.align="center"}
 knitr::include_graphics("151673.pdf")
 ```
 
-As first, we reduce the number of genes by selecting only those whose number of counts is at least 300.
+
+As a first step, we sought to exclude uninformative genes and reduce the analysis to a lower dimensional
+problem. We begin selecting only those whose number of counts is at least 300.
 
 ```{r, eval=F}
 spe <- spe[which(rowSums(counts(spe)) >= 300),]
 ```
 
-We now select the genes informative on the occurring biological processes in the sample using the method of *Townes et al. (2019)*. The functions are implemented into the package `scry`. First, we compute the deviance of each gene using the binomal approximation of the multinomial likelihood.
+Then, we apply the gene selection procedure for UMI count data proposed by [Townes et al.
+(2019)](https://genomebiology.biomedcentral.com/articles/10.1186/s13059-019-1861-6), i.e., we fit a multinomial model on every vector of gene expression and compute the deviance. The functions to perform these operations are implemented into the package `scry`. First, we compute the deviance of each gene using the binomial approximation of the multinomial likelihood.
 
 ```{r, eval = F}
 spe <- devianceFeatureSelection(spe, assay="counts", sorted=TRUE)
@@ -86,40 +88,56 @@ ggplot(DeviancePlot, aes(x, y))+geom_line()+
   theme(legend.position = "bottom")
 ```
 
-Last, the transformed data correspond to the deviance residuals.
+Based on the criterion that large deviance values are associated to informative genes, we kept the first
+500 genes and discarded the remaining ones. Note that the deviance, which
+is very high for the top genes, reaches a plateau after 200 genes. 
+
+To normalize the data, we computed,
+for each selected gene, the deviance residuals based on both the binomial and the Poisson approximation of the multinomial
+distribution.
 
 ```{r, eval=F}
 spe <- nullResiduals(spe, assay="counts", fam = "binomial", type = "deviance")
+spe <- nullResiduals(spe, assay="counts", fam = "poisson", type = "deviance")
 spe <- spe[1:500,]
 ```
 
-This quantity is now available as an assay of the `spe` object.
+The results of this procedure are available as assays of the `spe` object. Given that the two types of deviance residuals are in practice equivalent, we will consider the binomial residuals.
 
 ### SpaRTaCo model fitting
 
-We run SpaRTaCo for 3,000 iterations, starting from five different sets of initial points. Since `spe` is an object of class `SpatialExperiment`, it can be used directly into the function for estimating the model.
+SpaRTaCo can be run for a given number of iterations starting from different sets of initial points. Since `spe` is an object of class `SpatialExperiment`, it can be used directly into the estimation function. To fit the model, use the function
 
 ```{r, eval = F}
 results <- spartaco_multirun(spe, assay = "binomial_deviance_residuals", K = 2, R = 9, nstart = 5, max.iter = 3000, mc.cores = 5)
 ```
+ 
+In this case, the applied model searches for 18 blocks (2 row clusters and 9 column clusters), and the estimation algorithm is run for 3,000 iterations starting from 5 different sets of points.
 
-To run SpaRTaCo with multiple dimensions, one could use the function `parallel::mclapply`. Let us suppose for example that we evaluate the range of column clusters from 7 to 12. Note that, in order to perform each single estimation in parallel, we need 30 cores.
+To run SpaRTaCo simultaneously with multiple dimensions, one could use for example the function `parallel::mclapply`. Let us suppose that we evaluate from 7 to 12 column clusters. The code to perform this operation is
 
 ```{r, eval = F}
 R.values <- 7:12
 multiresults <- parallel::mclapply(R.values, function(r)
   spartaco_multirun(data = spe, assay = "binomial_deviance_residuals", K = 2, R = r, nstart = 5, max.iter = 3000, mc.cores = 5), mc.cores = length(R.values))
-ICL.values <- unlist(lapply(multiresults, function(x) x$ICL));ICL.values
+ICL.values <- unlist(lapply(multiresults, function(x) x$ICL))
+ggplot(data.frame(R.values, ICL.values), aes(R.values, ICL.values/1e+6))+geom_point()+theme_classic()+ylab("ICL (1e+6)")
 ```
 
+```{r, echo = F, fig.align="center"}
+ggplot(icl.values, aes(R, ICL/1e+6))+geom_point()+
+  theme_classic()+ylab("ICL (1e+6)")
+```
+
+Note that, in order to perform all the required computations in parallel, we need 30 cores (6 models, each of which is run 5 times).
 From the ICL it is visible that the best model is the one with `R = 12`; however, we believe that the local maximum in correspondence of
 `R = 9` represents also a valid solution. In fact, a large value of `R` would result in too many small clusters, complicating the biological interpretation.
 
 ```{r, eval = F}
-sel.model <- multiresults[[which.max(ICL.values)]]
+sel.model <- multiresults[[3]] # corresponding to the model with R = 9
 ```
 
-`sel.model` is an object of class `spartaco`. The clustering labels are contained into the objects `sel.model$Cs` and `sel.model$Ds`. To display the mean levels and the spatial signal-to-noise ratios within the blocks, run
+`sel.model` contains the model with $(K=2,R=9)$ and it is an object of class `spartaco`. The row and column clustering labels are contained into `sel.model$Cs` and `sel.model$Ds`. To display the mean levels and the spatial signal-to-noise ratios within the blocks, run
 
 
 ```{r, eval = T, fig.width = 6.5, fig.height=4, fig.align="center"}
@@ -129,28 +147,45 @@ plot(sel.model, type = 2)
 
 To display the spot clusters, run
 
-```{r, eval = F, fig.width = 6.5, fig.height=5, fig.align="center"}
+```{r, eval = T, fig.width = 6.5, fig.height=5, fig.align="center"}
 plot(sel.model, type = 3)
 ```
 
 It appears that the spatial activity of the genes in $\mathcal{C}_2$ is largely evident within
-the internal area of the White Matter ($\mathcal{D}_1$, signal-to-noise ratio = ` round(sel.model$stn.ratio[2,1],2)`) and progressively decreases approaching Layer
-6 (signal-to-noise ratio of $\mathcal{D}_8$ = ` round(sel.model$stn.ratio[2,8],2)`, and signal-to-noise ratio of $\mathcal{D}_9$ = ` round(sel.model$stn.ratio[2,9],2)`).
+the internal area of the White Matter ($\mathcal{D}_1$, signal-to-noise ratio = `r round(sel.model$stn.ratio[2,1],2)`) and progressively decreases approaching Layer
+6 (signal-to-noise ratio of $\mathcal{D}_8$ = `r round(sel.model$stn.ratio[2,8],2)`, and signal-to-noise ratio of $\mathcal{D}_9$ = `r round(sel.model$stn.ratio[2,9],2)`).
 
 To display the average gene expression of the genes in $k = 2$ and within the regions $r \in \{1,8,9 \}$, run
 
-```{r, eval = F, fig.width = 6.5, fig.height=5, fig.align="center"}
+```{r, eval = T, fig.width = 6.5, fig.height=5, fig.align="center"}
 plot(sel.model, type = 4, k = 2, r = c(1,8,9))
 ```
 
 If instead you want to display the expression of a single gene (e.g. `PCP4`) in the areas $r\in\{2,7\}$, run
 
-```{r, eval = F, fig.width = 6.5, fig.height=5, fig.align="center"}
+```{r, eval = T, fig.width = 6.5, fig.height=5, fig.align="center"}
 plot(sel.model, type = 4, gene.name = "PCP4", r = c(2,7))
 ```
 
-### Visializing the highly variable genes in specific areas of the tissue
+### Visualize the highly variable genes in specific areas of the tissue
 
+The SpaRTaCo model allows also to determine the highly variable genes within specific areas of the image, net of the spatial variability. This is done by analyzing the distribution of the random effects $\sigma^2$ given the data and the estimated parameters and clusters: for example, the distribution of the variance of a gene $i\in\mathcal{C}_k$ within the spots of the cluster $\mathcal{D}_r$ is 
+$$
+\sigma^2_i|\mathbf{X}\sim \mathcal{IG}\left(\dfrac{p_r}{2}+\hat{\alpha}_{kr}, \dfrac{(\mathbf{x}_i-\hat{\mu}_{kr}\mathbf{1})^T\hat{\boldsymbol{\Delta}}^{-1}_{kr}(\mathbf{x}_i-\hat{\mu}_{kr}\mathbf{1})}{2}+\hat{\beta}_{kr}\right).
+$$
+Thus, a particular attention can be given to those genes with a large expectation of $\mathbb{E}(\sigma^2_i|\mathbf{X})$. To do so, we first compute the expectation, the variance and the HPD intervals of such distributions:
 
+```{r, eval = F}
+gene.var <- GeneVariances(x = results)
+```
 
+The object `gene.var` is of class `spartaco.genes`, so it has its own plotting function. Let us suppose for example that we want to display the distribution of the gene specific variances in the spots in $\mathcal{D}_1$, highlighting the 20 most variable genes. The `plot` function returns both a `ggplot` graph and a list of the top variable genes.
 
+```{r, eval = T, fig.width = 6.5, fig.height=5, fig.align="center"}
+plot(gene.var, g = 20, return.plots = T, r = 1)
+```
+
+This kind of plot either serves to confirm that our model returns coherent results, and provides some novel insights. In fact, among the highly variables genes in $\mathcal{D}_1$, there are MBP and PLP1, which are responsible,
+respectively, for the production and the maintenance of myelin, the covering sheath of the nerve fibers in the White Matter. At the same time, we see that the variabiity of the gene CERCAM is very high, even though the gene selection method of  *Townes et al. (2019)* placed it among the less informative genes. CERCAM
+encodes a cell adhesion protein involved in leukocyte transmigration across the blood-brain barrier
+(Starzyk et al., 2000).
