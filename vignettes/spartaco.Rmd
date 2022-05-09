@@ -44,7 +44,7 @@ if (!exists("sce")) sce <- fetch_data(type = "sce", eh = ehub) # SingleCellExper
 if (!exists("spe")) spe <- fetch_data(type = "spe", eh = ehub) # SpatialExperiment
 ```
 
-We will use the `SpatialExperiment` object; however, the same analysis can be done using the the object `sce`. Not however that the functions into the `spartaco` package are not designed to deal with `SingleCellExperiment` objects, so the experiment matrix and the spatial coordinates must be manually passed to the estimation function. We concentrate on the sample with ID 151673:
+We will use the `SpatialExperiment` object; however, the same analysis can be done using the the object `sce`. Not however that the functions into the `spartaco` package are not designed to deal with `SingleCellExperiment` objects, so the experiment matrix and the spatial coordinates must be manually passed to the estimation function. We analyze here the sample with ID 151673:
 
 ```{r, eval = F}
 spe <- spe[,colData(spe)$sample_id == "151673"]
@@ -58,7 +58,7 @@ knitr::include_graphics("151673.pdf")
 
 
 As a first step, we sought to exclude uninformative genes and reduce the analysis to a lower dimensional
-problem. We begin selecting only those whose number of counts is at least 300.
+problem. We begin selecting only those genes whose number of counts is at least 300.
 
 ```{r, eval=F}
 spe <- spe[which(rowSums(counts(spe)) >= 300),]
@@ -102,17 +102,33 @@ spe <- nullResiduals(spe, assay="counts", fam = "poisson", type = "deviance")
 spe <- spe[1:500,]
 ```
 
+In the following figure, we display the boxplots of the first 100 genes transformed according to the binomial and the Poisson deviance residuals.
+
+```{r, echo = F, figures-side, fig.show="hold", out.width="50%", fig.align="center"}
+par(mfrow = c(1,2))
+knitr::include_graphics("DevianceResid_1.pdf")
+knitr::include_graphics("DevianceResid_2.pdf")
+knitr::include_graphics("DevianceResid_3.pdf")
+knitr::include_graphics("DevianceResid_4.pdf")
+```
+
 The results of this procedure are available as assays of the `spe` object. Given that the two types of deviance residuals are in practice equivalent, we will consider the binomial residuals.
 
 ### SpaRTaCo model fitting
 
-SpaRTaCo can be run for a given number of iterations starting from different sets of initial points. Since `spe` is an object of class `SpatialExperiment`, it can be used directly into the estimation function. To fit the model, use the function
+SpaRTaCo can be fitted on the deviance residuals obtained at the previous step. The estimation function is run for a given number of iterations starting from different sets of initial points. The code is the following:
 
 ```{r, eval = F}
-results <- spartaco_multirun(spe, assay = "binomial_deviance_residuals", K = 2, R = 9, nstart = 5, max.iter = 3000, mc.cores = 5)
+results <- spartaco_multirun(data = spe, assay = "binomial_deviance_residuals", K = 2, R = 9, nstart = 5, max.iter = 3000, mc.cores = 5)
 ```
  
-In this case, the applied model searches for 18 blocks (2 row clusters and 9 column clusters), and the estimation algorithm is run for 3,000 iterations starting from 5 different sets of points.
+In this case, the estimated SpaRTaCo has 18 blocks (2 row clusters and 9 column clusters), and the estimation algorithm is run for 3,000 iterations starting from 5 different sets of points. It is possible to set the number of cores to be employed into the process through `mc.cores`. Note that `spe` is an object of class `SpatialExperiment` and can be used directly into the `spartaco` function. In alternative, the following code line is equivalent to the previous one.
+
+```{r, eval = F}
+x <- as.matrix(spe@assays@data$binomial_deviance_residuals)
+coordinates <- spatialCoords(spe)
+results <- spartaco_multirun(data = x, coordinates = coordinates, K = 2, R = 9, nstart = 5, max.iter = 3000, mc.cores = 5)
+```
 
 To run SpaRTaCo simultaneously with multiple dimensions, one could use for example the function `parallel::mclapply`. Let us suppose that we evaluate from 7 to 12 column clusters. The code to perform this operation is
 
