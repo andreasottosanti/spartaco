@@ -1,6 +1,7 @@
 ---
-title: "Simultaneous clustering of genes and spots in 10X Visium spatial experiments using SpaRTaCo"
-output: rmarkdown::html_vignette
+title: "Simultaneous clustering of genes and spots in 10X Visium spatial transcriptomic experiments using SpaRTaCo"
+author: Andrea Sottosanti and Davide Risso
+output: rmarkdown::pdf_document
 vignette: >
   %\VignetteIndexEntry{real data analysis}
   %\VignetteEngine{knitr::rmarkdown}
@@ -14,7 +15,7 @@ knitr::opts_chunk$set(
 )
 ```
 
-In this vignette, we show how to use  the functions of the R package `spartaco` to fit the SpaRTaCo model (*Sottosanti and Risso, 2021+*) on 10X Visium spatial experiments. We consider one of the human dorsolateral prefrontal cortex tissue samples contained into the `R` package [spatialLIBD](http://spatial.libd.org/spatialLIBD/) (click the link to have more details about the data). The following analysis is extracted from  Sottosanti and Risso's article. Note that, due to the high computational costs that the estimation of SpaRTaCo requires, most of the computations have  been run locally, and the results uploaded.
+In this vignette, we show how to use  the functions of the R package `spartaco` to fit the SpaRTaCo co-clustering model ([*Sottosanti and Risso, 2021+*](https://arxiv.org/pdf/2110.04872.pdf)) on 10X Visium spatial experiments. We consider one of the human dorsolateral prefrontal cortex tissue samples contained into the `R` package [spatialLIBD](http://spatial.libd.org/spatialLIBD/) (click the link to have more details about the data). The following analysis is extracted from  Sottosanti and Risso's article. Note that, due to the high computational costs that the estimation of SpaRTaCo requires, most of the code has  been run locally, and the results uploaded.
 
 
 ```{r, echo = F}
@@ -26,7 +27,7 @@ load("DeviancePlot.Rdata")
 ```
 
 
-### Data import and pre-processing
+## Data import and pre-processing
 
 ```{r, eval=F}
 library(spartaco)
@@ -48,14 +49,13 @@ We will use the `SpatialExperiment` object; however, the same analysis can be do
 
 ```{r, eval = F}
 spe <- spe[,colData(spe)$sample_id == "151673"]
-vis_clus(spe = spe, sampleid = "151673", clustervar = "layer_guess_reordered", colors = libd_layer_colors,
+vis_clus(spe = spe, sampleid = "151673", clustervar = "layer_guess_reordered", 
+         colors = libd_layer_colors,
          ... = " LIBD Layers")+theme(plot.title = element_text(hjust = .5))
 ```
-
 ```{r, echo = F, width = 10, height=10, fig.align="center"}
 knitr::include_graphics("151673.pdf")
 ```
-
 
 As a first step, we sought to exclude uninformative genes and reduce the analysis to a lower dimensional
 problem. We begin selecting only those genes whose number of counts is at least 300.
@@ -102,7 +102,7 @@ spe <- nullResiduals(spe, assay="counts", fam = "poisson", type = "deviance")
 spe <- spe[1:500,]
 ```
 
-In the following figure, we display the boxplots of the first 100 genes transformed according to the binomial and the Poisson deviance residuals.
+In the following figures, we display the boxplots of the first 100 genes transformed according to the binomial and the Poisson deviance residuals.
 
 ```{r, echo = F, figures-side, fig.show="hold", out.width="50%", fig.align="center"}
 par(mfrow = c(1,2))
@@ -114,33 +114,37 @@ knitr::include_graphics("DevianceResid_4.pdf")
 
 The results of this procedure are available as assays of the `spe` object. Given that the two types of deviance residuals are in practice equivalent, we will consider the binomial residuals.
 
-### SpaRTaCo model fitting
+## SpaRTaCo model fitting
 
 SpaRTaCo can be fitted on the deviance residuals obtained at the previous step. The estimation function is run for a given number of iterations starting from different sets of initial points. The code is the following:
 
 ```{r, eval = F}
-results <- spartaco_multirun(data = spe, assay = "binomial_deviance_residuals", K = 2, R = 9, nstart = 5, max.iter = 3000, mc.cores = 5)
+results <- spartaco_multirun(data = spe, assay = "binomial_deviance_residuals", K = 2, 
+                             R = 9, 
+                             nstart = 5, max.iter = 3000, mc.cores = 5)
 ```
  
-In this case, the estimated SpaRTaCo has 18 blocks (2 row clusters and 9 column clusters), and the estimation algorithm is run for 3,000 iterations starting from 5 different sets of points. It is possible to set the number of cores to be employed into the process through `mc.cores`. Note that `spe` is an object of class `SpatialExperiment` and can be used directly into the `spartaco` function. In alternative, the following code line is equivalent to the previous one.
+In this case, the estimated SpaRTaCo has 18 blocks (2 row clusters and 9 column clusters), and the estimation algorithm is run for 3,000 iterations starting from 5 different sets of points. It is possible to set the number of cores to be employed into the process through `mc.cores`. Note that `spe` is an object of class `SpatialExperiment` and can be used directly into the `spartaco` function. In alternative, the following line is equivalent to the previous one.
 
 ```{r, eval = F}
 x <- as.matrix(spe@assays@data$binomial_deviance_residuals)
 coordinates <- spatialCoords(spe)
-results <- spartaco_multirun(data = x, coordinates = coordinates, K = 2, R = 9, nstart = 5, max.iter = 3000, mc.cores = 5)
+results <- spartaco_multirun(data = x, coordinates = coordinates, K = 2, R = 9, 
+                             nstart = 5, max.iter = 3000, mc.cores = 5)
 ```
 
-To run SpaRTaCo simultaneously with multiple dimensions, one could use for example the function `parallel::mclapply`. Let us suppose that we evaluate from 7 to 12 column clusters. The code to perform this operation is
+To run SpaRTaCo simultaneously with multiple dimensions, one can use for example the function `parallel::mclapply`. Let us suppose that we evaluate from 7 to 12 column clusters, keeping fixed the number of row clusters. The code that performs this operation is
 
 ```{r, eval = F}
-R.values <- 7:12
-multiresults <- parallel::mclapply(R.values, function(r)
-  spartaco_multirun(data = spe, assay = "binomial_deviance_residuals", K = 2, R = r, nstart = 5, max.iter = 3000, mc.cores = 5), mc.cores = length(R.values))
+multiresults <- parallel::mclapply(7:12, function(r)
+  spartaco_multirun(data = spe, assay = "binomial_deviance_residuals", K = 2, R = r, 
+                    nstart = 5, max.iter = 3000, mc.cores = 5), mc.cores = length(R.values))
 ICL.values <- unlist(lapply(multiresults, function(x) x$ICL))
-ggplot(data.frame(R.values, ICL.values), aes(R.values, ICL.values/1e+6))+geom_point()+theme_classic()+ylab("ICL (1e+6)")
+ggplot(data.frame(R.values, ICL.values), aes(R.values, ICL.values/1e+6))+geom_point()+
+  theme_classic()+ylab("ICL (1e+6)")
 ```
 
-```{r, echo = F, fig.align="center"}
+```{r, echo = F, fig.width = 5.5, fig.height=3.5}
 ggplot(icl.values, aes(R, ICL/1e+6))+geom_point()+
   theme_classic()+ylab("ICL (1e+6)")
 ```
@@ -156,14 +160,14 @@ sel.model <- multiresults[[3]] # corresponding to the model with R = 9
 `sel.model` contains the model with $(K=2,R=9)$ and it is an object of class `spartaco`. The row and column clustering labels are contained into `sel.model$Cs` and `sel.model$Ds`. To display the mean levels and the spatial signal-to-noise ratios within the blocks, run
 
 
-```{r, eval = T, fig.width = 6.5, fig.height=4, fig.align="center"}
-plot(sel.model, type = 1)
-plot(sel.model, type = 2)
+```{r, eval = T, fig.width = 5.5, fig.height=3.5, fig.align="center"}
+plot(sel.model, type = 1)+theme(axis.text=element_text(size=12))
+plot(sel.model, type = 2)+theme(axis.text=element_text(size=12))
 ```
 
 To display the spot clusters, run
 
-```{r, eval = T, fig.width = 6.5, fig.height=5, fig.align="center"}
+```{r, eval = T, fig.width = 6, fig.height=4.5, fig.align="center"}
 plot(sel.model, type = 3)
 ```
 
@@ -173,13 +177,13 @@ the internal area of the White Matter ($\mathcal{D}_1$, signal-to-noise ratio = 
 
 To display the average gene expression of the genes in $k = 2$ and within the regions $r \in \{1,8,9 \}$, run
 
-```{r, eval = T, fig.width = 6.5, fig.height=5, fig.align="center"}
+```{r, eval = T, fig.width = 6, fig.height=4.5, fig.align="center"}
 plot(sel.model, type = 4, k = 2, r = c(1,8,9))
 ```
 
 If instead you want to display the expression of a single gene (e.g. `PCP4`) in the areas $r\in\{2,7\}$, run
 
-```{r, eval = T, fig.width = 6.5, fig.height=5, fig.align="center"}
+```{r, eval = T, fig.width = 6, fig.height=4.5, fig.align="center"}
 plot(sel.model, type = 4, gene.name = "PCP4", r = c(2,7))
 ```
 
@@ -197,7 +201,7 @@ gene.var <- GeneVariances(x = results)
 
 The object `gene.var` is of class `spartaco.genes`, so it has its own plotting function. Let us suppose for example that we want to display the distribution of the gene specific variances in the spots in $\mathcal{D}_1$, highlighting the 20 most variable genes. The `plot` function returns both a `ggplot` graph and a list of the top variable genes.
 
-```{r, eval = T, fig.width = 6.5, fig.height=5, fig.align="center"}
+```{r, eval = T, fig.width = 6, fig.height=4.5}
 plot(gene.var, g = 20, return.plots = T, r = 1)
 ```
 
