@@ -13,7 +13,7 @@ updatePhi_r_marginal <- function(x, Cs, Dist, Mu, Tau, Xi, Alpha, Beta, phi.old 
         })
         -sum(val)
     })#, control = list(maxit = 5))
-    #if(routine.phi$conv != 0) stop("Converge error in Phi!")
+    if(routine.phi$conv != 0) stop("Converge error in Phi!")
     return(routine.phi$par)
 }
 
