@@ -127,8 +127,8 @@ plot.spartaco <- function(x, type = 1, gene.name = readline("gene name: "), k = 
                   title = element_text(size=18),
                   plot.margin=grid::unit(c(3,2,3,2), "mm"))+
             geom_point(shape = 1,size = 3,colour = "black")
-        if(use.greys)
-            Plots <- Plots + scale_color_grey(start = 0, end = .9) else
+        #if(use.greys)
+        #    Plots <- Plots + scale_color_grey(start = 0, end = .9) else
                 Plots <- Plots + scale_color_manual(values = manual.palette)
     }
 
