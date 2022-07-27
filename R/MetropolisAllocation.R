@@ -1,10 +1,3 @@
-#' Run the SpaRTaCo SE Step
-#'
-#' @param x the data matrix of size `n` x `p`;
-#' @param ... ;
-#' @param maxit the number of iterations to be performed;
-#' @param min.obs the minimum number of observations in a cluster;
-#' @param prob.m a vector of probabilities. The element in position `m` is the probability to perform `m` changes.
 
 MetropolisAllocation <- function(x,
                                  Cs, Ds,
@@ -112,13 +105,8 @@ MetropolisAllocation <- function(x,
 }
 
 
-#' Run the SpaRTaCo SE Step, speed-up version
-#'
-#' @param x the data matrix of size `n` x `p`;
-#' @param ... ;
-#' @param maxit the number of iterations to be performed;
-#' @param min.obs the minimum number of observations in a cluster;
-#' @param prob.m a vector of probabilities. The element in position `m` is the probability to perform `m` changes.
+
+
 
 MetropolisAllocation_fast <- function(x,
                                  Cs, Ds,
