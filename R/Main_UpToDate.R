@@ -47,9 +47,10 @@ main <- function(x, coordinates,
     logL.values <- matrix(0, K, R)
     i <- 1
     if(!is.null(conv.criterion)) counter.conv <- 0
-    for(i in 1:max.iter){
-        progress(i, progress.bar = T)
+    while(T){
         if(i == max.iter) break
+        i <- i + 1
+        if(!verbose) progress(i/max.iter*100)
         if(verbose) cat(paste("---Iteration",i,"\n"))
 
         # ---M Step
