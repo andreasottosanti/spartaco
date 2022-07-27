@@ -1,3 +1,6 @@
+#' @import svMisc
+#'
+
 main <- function(x, coordinates,
                  K,
                  R,
@@ -44,9 +47,9 @@ main <- function(x, coordinates,
     logL.values <- matrix(0, K, R)
     i <- 1
     if(!is.null(conv.criterion)) counter.conv <- 0
-    while(T){
+    for(i in 1:max.iter){
+        progress(i, progress.bar = T)
         if(i == max.iter) break
-        i <- i+1
         if(verbose) cat(paste("---Iteration",i,"\n"))
 
         # ---M Step
@@ -72,18 +75,6 @@ main <- function(x, coordinates,
                 cur.alpha[k,r] <<- estimation.parameters$alpha
                 cur.beta[k,r] <<- estimation.parameters$beta
             })
-            cur.phi[r] <<- updatePhi_r_marginal(x = x[,cur.Ds == r],
-                                               Cs = cur.Cs,
-                                               Dist = Dist[cur.Ds == r, cur.Ds == r],
-                                               Mu = cur.mu[,r],
-                                               Tau = cur.tau[,r],
-                                               Xi = cur.xi[,r],
-                                               Alpha = cur.alpha[,r],
-                                               Beta = cur.beta[,r],
-                                               phi.old = cur.phi[r])
-            EigenK <- eigen(exp(-Dist[cur.Ds == r, cur.Ds == r]/cur.phi[r]))
-            Uglob[[r]] <<- EigenK$vec
-            Dglob[cur.Ds == r] <<- EigenK$val
         })
 
         # ---SE Step
@@ -92,7 +83,7 @@ main <- function(x, coordinates,
             MetropolisAllocation(x = x, Uglob = Uglob, Dglob = Dglob,
                                            Cs = cur.Cs, Ds = cur.Ds, Dist = Dist, Mu = cur.mu, Tau = cur.tau, Xi = cur.xi, Alpha = cur.alpha, Beta = cur.beta, Phi = cur.phi,
                                            maxit = metropolis.iterations,
-                                 rate.m = 1/(i-1)+.5,
+#                                 rate.m = 1/(i-1)+.5,
                                  prob.m = prob.m,
                                  min.obs = 10)
             },

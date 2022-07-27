@@ -77,10 +77,10 @@ Estimate.Cocluster.Parameters.marginal.constraint.trace <- function(x,
                                      -n/2*sum(log(taup * d + xip)) -
                                          (p/2+cur.alpha) * sum(log(G.mat %*% (1/(taup * d + xip))/2 + cur.beta))
                                     )
-                             }, control = list(maxit = 1000))
-        if(routine.tau$convergence != 0){
-            stop("Convergence error in tau!")
-        }
+                             }, control = list(maxit = 3))
+        #if(routine.tau$convergence != 0){
+        #    stop("Convergence error in tau!")
+        #}
         cur.tau <- routine.tau$par
         cur.xi <- traceDelta/p - cur.tau
 

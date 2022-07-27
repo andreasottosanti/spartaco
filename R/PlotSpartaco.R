@@ -107,9 +107,10 @@ plot.spartaco <- function(x, type = 1, gene.name = readline("gene name: "), k = 
                 if(length(manual.palette) < R) manual.palette <- c(c("red","yellow","lightblue","green","blue","purple","salmon","black","grey"),
                                                                    manual.palette)
         Coord <- data.frame(x = x$coordinates[,2], y = -x$coordinates[,1], z = as.factor(x$Ds))
-        Plots <- ggplot(Coord, aes(x, y, color = z))+geom_point(size = 3)+theme_bw()+
+        Coord$group <- as.factor(as.numeric(x$Ds %in% c(1,7:9)))
+        Plots <- ggplot(Coord, aes(x, y, color = z))+
+            geom_point(size = 3)+theme_bw()+
             labs(col = "")+
-            scale_color_manual(values = manual.palette)+#scale_color_brewer(palette="Set1")
             labs(col = expression(D[r]))+
             theme(panel.grid.major = element_blank(),
                   panel.grid.minor = element_blank(),
@@ -126,8 +127,9 @@ plot.spartaco <- function(x, type = 1, gene.name = readline("gene name: "), k = 
                   title = element_text(size=18),
                   plot.margin=grid::unit(c(3,2,3,2), "mm"))+
             geom_point(shape = 1,size = 3,colour = "black")
-
-
+        if(use.greys)
+            Plots <- Plots + scale_color_grey(start = 0, end = .9) else
+                Plots <- Plots + scale_color_manual(values = manual.palette)
     }
 
     # ---plot expressions
@@ -147,6 +149,9 @@ plot.spartaco <- function(x, type = 1, gene.name = readline("gene name: "), k = 
                     x.bar <- colMeans(x$x[which(x$Cs == k), which(x$Ds %in% r)])
                 Plots <- ggplot(Coord[which(x$Ds %in% r),], aes(x, y, color = x.bar))+
                         geom_point(size = 3)+theme_bw()+
+                    scale_color_distiller(type = "seq",
+                                          direction = -1,
+                                          palette = "Greys")+
                         labs(col = "")+
                         theme(panel.grid.major = element_blank(),
                               panel.grid.minor = element_blank(),
@@ -171,6 +176,9 @@ plot.spartaco <- function(x, type = 1, gene.name = readline("gene name: "), k = 
                     x.bar <- colMeans(x$x[x$Cs == k[k.ind], which(x$Ds %in% r)])
                     ggplot(Coord[which(x$Ds %in% r),], aes(x, y, color = x.bar))+
                         geom_point(size = 3)+theme_bw()+
+                        scale_color_distiller(type = "seq",
+                                              direction = -1,
+                                              palette = "Greys")+
                         labs(col = "")+
                         theme(panel.grid.major = element_blank(),
                               panel.grid.minor = element_blank(),
@@ -224,6 +232,9 @@ plot.spartaco <- function(x, type = 1, gene.name = readline("gene name: "), k = 
                         theme_bw()+
                         geom_point(data = Coord[-which(x$Ds %in% r),], mapping = aes(x, y), size = 3, fill = "white", colour = "gray74", shape = 21)+
                         geom_point(data = Coord[which(x$Ds %in% r),], mapping = aes(x, y, fill = x.bar), colour = "white", size = 4, shape = 21)+
+                         scale_color_distiller(type = "seq",
+                                               direction = -1,
+                                               palette = "Greys")+
                         labs(col = "")+
                         theme(panel.grid.major = element_blank(),
                               panel.grid.minor = element_blank(),

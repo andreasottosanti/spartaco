@@ -10,3 +10,13 @@ logL.Cocluster <- function(x, Mu, Tau, Xi, Alpha, Beta, U, d){
         sum(lgamma(alpha.post.i)-alpha.post.i*log(beta.post.i))
 }
 
+logL.Cocluster2 <- function(x, Mu, Delta.inv, Alpha, Beta){
+    if(is.vector(x)) x <- matrix(x, nrow = 1)
+    alpha.post.i <- ncol(x)/2 + Alpha
+    beta.post.i <- (x - Mu) %*% Delta.inv %*% t(x - Mu)/2 + Beta
+    -nrow(x)*ncol(x)/2*log(2*pi) +
+        nrow(x)/2*sum(log(invD))+
+        nrow(x)*(Alpha*log(Beta)-lgamma(Alpha))+
+        sum(lgamma(alpha.post.i)-alpha.post.i*log(beta.post.i))
+}
+

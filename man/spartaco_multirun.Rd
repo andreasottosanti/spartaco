@@ -49,10 +49,12 @@ spartaco_multirun(
 }
 \value{
 An object of class \code{spartaco} with the parameter estimates, the clustering labels, the log-likelihood value at each iteration and the data, the ICL, the data matrix and the coordinates matrix, and the clustering uncertainty.
-For details about the parameters, check \code{\link[=spartaco]{spartaco()}}
 }
 \description{
 This function returns the estimated model parameters and the co-clustering labels obtained after running SpaRTaCo multiple times in parallel.
+}
+\details{
+For details about the parameters, check \code{\link[=spartaco]{spartaco()}}
 }
 \references{
 Sottosanti, A. and Risso, D. (2021+) Co-clustering of Spatially Resolved Transcriptomic Data \href{https://arxiv.org/abs/2110.04872}{(preprint)}
