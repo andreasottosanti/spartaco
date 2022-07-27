@@ -1,4 +1,4 @@
-#' Obtain the inverse of a matrix with some rows/columns removed
+#' Obtain the inverse of a matrix with some rows/columns added
 #'
 #' @param B a squared matrix of size `p`, representing the inverse of a matrix;
 #' @param K the matrix of size `p x k` added to the former matrix;

@@ -2,7 +2,7 @@
 % Please edit documentation in R/add_delete_inverte.R
 \name{AddRowColInverse}
 \alias{AddRowColInverse}
-\title{Obtain the inverse of a matrix with some rows/columns removed}
+\title{Obtain the inverse of a matrix with some rows/columns added}
 \usage{
 AddRowColInverse(B, K, C)
 }
@@ -14,5 +14,5 @@ AddRowColInverse(B, K, C)
 \item{C}{a \verb{k x k} matrix added to the former matrix;}
 }
 \description{
-Obtain the inverse of a matrix with some rows/columns removed
+Obtain the inverse of a matrix with some rows/columns added
 }
