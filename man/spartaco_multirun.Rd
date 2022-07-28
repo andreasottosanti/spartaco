@@ -17,7 +17,8 @@ spartaco_multirun(
   estimate.iterations = 100,
   prob.m = c(0.7, 0.2, 0.1),
   conv.criterion = list(iterations = 10, epsilon = 1e-04),
-  mc.cores = 1
+  verbose = T,
+  verbose.display.intervals = 10
 )
 }
 \arguments{
@@ -45,7 +46,9 @@ spartaco_multirun(
 
 \item{conv.criterion}{a list containing the parameters that define a converge criterion (see \strong{Details}).}
 
-\item{mc.cores}{the number of cores to be used.}
+\item{verbose}{logical; it \code{TRUE}, it displays the estimation process through a dynamic progress bar.}
+
+\item{verbose.display.intervals}{integer; if \code{verbose == T}, the dynamic progress bar is updated after \code{max.iter/verbose.display.intervals} iterations.}
 }
 \value{
 An object of class \code{spartaco} with the parameter estimates, the clustering labels, the log-likelihood value at each iteration and the data, the ICL, the data matrix and the coordinates matrix, and the clustering uncertainty.
@@ -54,7 +57,26 @@ An object of class \code{spartaco} with the parameter estimates, the clustering 
 This function returns the estimated model parameters and the co-clustering labels obtained after running SpaRTaCo multiple times in parallel.
 }
 \details{
-For details about the parameters, check \code{\link[=spartaco]{spartaco()}}
+This function allows to run the \code{spartaco} model starting from multiple starting points simultaneously.
+It is possible to run this function using multiple cores; to do so, use the \code{multicore} function package \code{future} (see \strong{Examples}).
+
+If \code{verbose == T}, it displays the estimation process through a progress bar. Note that in this case the final output will be based just on the last \code{max.iter/verbose.display.intervals} iterations.
+For details about the rest of the parameters, check \code{\link[=spartaco]{spartaco()}}
+}
+\examples{
+library(spartaco)
+
+# First, create the data matrix:
+n <- p <- 300
+K <- R <- 3
+x <- matrix(runif(n*p), n, p)
+coordinates <- matrix(runif(2*p), p, 2)
+
+# Set the number of cores to be used for the computations. In this case, we want 3 cores.
+future::plan(future::multisession(workers = 3))
+output <- spartaco(data = x, coordinates = coordinates, K = K, R = R, max.iter = 1000, verbose.display.intervals = 100)
+
+# according to this setup, the progress bar will be updated once every 10 iterations are performed.
 }
 \references{
 Sottosanti, A. and Risso, D. (2021+) Co-clustering of Spatially Resolved Transcriptomic Data \href{https://arxiv.org/abs/2110.04872}{(preprint)}

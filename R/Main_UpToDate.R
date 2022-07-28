@@ -1,6 +1,3 @@
-#' @import svMisc
-#'
-
 main <- function(x, coordinates,
                  K,
                  R,
@@ -12,7 +9,8 @@ main <- function(x, coordinates,
                  conv.criterion = NULL,
                  input.values = NULL,
                  save.options = NULL,
-                 verbose = F){
+                 verbose = F,
+                 verbose.parallel.label = NULL){
     Dist <- as.matrix(stats::dist(coordinates))
     if(is.null(input.values)){
         cur.Cs <- best.Ds <- sample(1:K, size = nrow(x), replace = T)
@@ -47,14 +45,18 @@ main <- function(x, coordinates,
     logL.values <- matrix(0, K, R)
     i <- 1
     if(!is.null(conv.criterion)) counter.conv <- 0
+    if(verbose == "progress") P <- progressr::progressor(along = 1:max.iter)
     while(T){
         if(i == max.iter) break
         i <- i + 1
-        if(!verbose) progress(i/max.iter*100)
-        if(verbose) cat(paste("---Iteration",i,"\n"))
+        #if(!verbose) svMisc::progress(i/max.iter*100)
+        #P(message = sprintf("Added %g", i))
+        #if(verbose == "parallel" & i %% 10 == 0) cat(paste(verbose.parallel.label,": Iteration ",i," of ",max.iter,"\n",sep=""))
+        if(verbose == "progress") P()
+        if(verbose == "full") cat(paste("---Iteration",i,"\n"))
 
         # ---M Step
-        if(verbose) cat("M Step/")
+        if(verbose == T) cat("M Step/")
         goodK <- sort(unique(cur.Cs))
         goodR <- sort(unique(cur.Ds))
         sapply(goodR, function(r){
@@ -79,7 +81,7 @@ main <- function(x, coordinates,
         })
 
         # ---SE Step
-        if(verbose) cat("SE Step/")
+        if(verbose == "full") cat("SE Step/")
         cur.ds <- tryCatch({
             MetropolisAllocation(x = x, Uglob = Uglob, Dglob = Dglob,
                                            Cs = cur.Cs, Ds = cur.Ds, Dist = Dist, Mu = cur.mu, Tau = cur.tau, Xi = cur.xi, Alpha = cur.alpha, Beta = cur.beta, Phi = cur.phi,
@@ -112,7 +114,7 @@ main <- function(x, coordinates,
         ll[i] <- sum(logL.values)
 
         # ---M Step
-        if(verbose) cat("M Step/")
+        if(verbose == "full") cat("M Step/")
         goodK <- sort(unique(cur.Cs))
         goodR <- sort(unique(cur.Ds))
         sapply(goodR, function(r){
@@ -149,7 +151,7 @@ main <- function(x, coordinates,
         })
 
         # ---CE Step
-        if(verbose) cat("CE Step/")
+        if(verbose == "full") cat("CE Step/")
         cur.cs <- RowClustering(x = x, Ds = cur.Ds, Mu = cur.mu, Tau = cur.tau, Xi = cur.xi, Alpha = cur.alpha, Beta = cur.beta, Phi = cur.phi, Uglob = Uglob, Dglob = Dglob)
         cur.Cs <- cur.cs$allocation
         goodK <- sort(unique(cur.Cs))
@@ -181,7 +183,7 @@ main <- function(x, coordinates,
             best.Ds <- cur.Ds
         }
 
-        if(verbose){
+        if(verbose == "full"){
             cat(paste("diff(logL) =",round(diff(ll)[i-1],5),"\n"))
             cat(paste("Row clusters size =", paste(table(cur.Cs), collapse = ", "),"\n"))
             cat(paste("Column clusters size =", paste(table(cur.Ds), collapse = ", "),"\n"))

@@ -17,7 +17,8 @@ spartaco(
   prob.m = c(0.7, 0.2, 0.1),
   input.values = NULL,
   conv.criterion = list(iterations = 10, epsilon = 1e-04),
-  verbose = TRUE,
+  verbose = T,
+  verbose.parallel.label = NULL,
   save.options = NULL,
   seed = NULL
 )
@@ -47,7 +48,9 @@ spartaco(
 
 \item{conv.criterion}{a list containing the parameters that define a converge criterion (see \strong{Details}).}
 
-\item{verbose}{if \code{TRUE}, it displays the on-going estimation process.}
+\item{verbose}{different ways to display the on-going estimation process (see \strong{Details}).}
+
+\item{verbose.parallel.label}{an additional label that is used to display the on-going estimation process when \code{verbose == "parallel"}.}
 
 \item{save.options}{a list for specifying the saving parameters (see \strong{Details}).}
 
@@ -78,6 +81,9 @@ If \code{conv.criterion == NULL}, the algorithm is stopped after \code{max.iter}
 
 The function allows also to save the results even if the estimation is not completed. To do so, \code{save.options} receives a list of two parameters:
 \code{after} gives the number of iterations after which the results are saved, \code{file.name} contains the path where the results are saved.
+
+If \code{verbose == "full"}, the on-going estimation procedure is displayed. If \code{verbose == "progress"}, a dynamic progress bar will display the percentage of iterations completed.
+If \code{verbose == F}, then nothing is displayed in console.
 }
 \examples{
 library(spartaco)
