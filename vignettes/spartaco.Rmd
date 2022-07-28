@@ -223,7 +223,7 @@ encodes a cell adhesion protein involved in leukocyte transmigration across the 
 (Starzyk et al., 2000).
 
 
-### Track the progress of each and every run of spartaco separately
+### Track the progress of each and every SpaRTaCo run separately
 
 The function `spartaco_multirun` displays a unique progress bar to display the whole estimation process based on `nstart` starting points. If the user is interested in checking each and every estimation process separately, we suggest to perform the following steps:
 
