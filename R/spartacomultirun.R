@@ -1,6 +1,6 @@
 #' Multiple runs of SpaRTaCo
 #'
-#' This function returns the estimated model parameters and the co-clustering labels obtained after running SpaRTaCo multiple times in parallel.
+#' This function returns the estimated model parameters and the co-clustering labels obtained after running SpaRTaCo multiple times (parallel options available).
 #'
 #' @import SpatialExperiment
 #' @import future.apply
@@ -44,7 +44,7 @@
 #' x <- matrix(runif(n*p), n, p)
 #' coordinates <- matrix(runif(2*p), p, 2)
 #'
-#' # Set the number of cores to be used for the computations. In this case, we want 3 cores.
+#' # Set the number of cores to be used for the computations. In this example, we use 3 cores.
 #' future::plan(future::multisession(workers = 3))
 #' output <- spartaco(data = x, coordinates = coordinates, K = K, R = R, max.iter = 1000, verbose.display.intervals = 100)
 #'

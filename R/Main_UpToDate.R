@@ -45,7 +45,9 @@ main <- function(x, coordinates,
     logL.values <- matrix(0, K, R)
     i <- 1
     if(!is.null(conv.criterion)) counter.conv <- 0
-    if(verbose == "progress") P <- progressr::progressor(along = 1:max.iter)
+    if(verbose == "progress"){
+        progressr::handlers(global = T)
+        P <- progressr::progressor(along = 1:max.iter)}
     while(T){
         if(i == max.iter) break
         i <- i + 1

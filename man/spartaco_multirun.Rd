@@ -54,7 +54,7 @@ spartaco_multirun(
 An object of class \code{spartaco} with the parameter estimates, the clustering labels, the log-likelihood value at each iteration and the data, the ICL, the data matrix and the coordinates matrix, and the clustering uncertainty.
 }
 \description{
-This function returns the estimated model parameters and the co-clustering labels obtained after running SpaRTaCo multiple times in parallel.
+This function returns the estimated model parameters and the co-clustering labels obtained after running SpaRTaCo multiple times (parallel options available).
 }
 \details{
 This function allows to run the \code{spartaco} model starting from multiple starting points simultaneously.
@@ -72,7 +72,7 @@ K <- R <- 3
 x <- matrix(runif(n*p), n, p)
 coordinates <- matrix(runif(2*p), p, 2)
 
-# Set the number of cores to be used for the computations. In this case, we want 3 cores.
+# Set the number of cores to be used for the computations. In this example, we use 3 cores.
 future::plan(future::multisession(workers = 3))
 output <- spartaco(data = x, coordinates = coordinates, K = K, R = R, max.iter = 1000, verbose.display.intervals = 100)
 
