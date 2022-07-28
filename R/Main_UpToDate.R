@@ -58,7 +58,7 @@ main <- function(x, coordinates,
         if(verbose == "full") cat(paste("---Iteration",i,"\n"))
 
         # ---M Step
-        if(verbose == T) cat("M Step/")
+        if(verbose == "full") cat("M Step/")
         goodK <- sort(unique(cur.Cs))
         goodR <- sort(unique(cur.Ds))
         sapply(goodR, function(r){
