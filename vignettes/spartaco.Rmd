@@ -116,29 +116,41 @@ The results of this procedure are available as assays of the `spe` object. Given
 
 ## SpaRTaCo model fitting
 
-SpaRTaCo can be fitted on the deviance residuals obtained at the previous step. The estimation function is run for a given number of iterations starting from different sets of initial points. The code is the following:
+SpaRTaCo can be fitted on the deviance residuals obtained at the previous step. The estimation function is run for a given number of iterations starting from different sets of initial points. For example, to run the estimation from 5 different sets of starting points using 5 cores, the code is the following:
 
 ```{r, eval = F}
+library(future)
+plan(multisession(workers = 5))
 results <- spartaco_multirun(data = spe, assay = "binomial_deviance_residuals", K = 2, 
                              R = 9, 
-                             nstart = 5, max.iter = 3000, mc.cores = 5)
+                             nstart = 5, max.iter = 3000,
+                             verbose = T,
+                             verbose.display.intervals = 100)
+plan(sequential)
 ```
  
-In this case, the estimated SpaRTaCo has 18 blocks (2 row clusters and 9 column clusters), and the estimation algorithm is run for 3,000 iterations starting from 5 different sets of points. It is possible to set the number of cores to be employed into the process through `mc.cores`. Note that `spe` is an object of class `SpatialExperiment` and can be used directly into the `spartaco` function. In alternative, the following line is equivalent to the previous one.
+With the above setup, a dynamic progress bar will appear on the console to show the on-going estimation process. The bar will be updated once every 30 iterations (given by 3000/100). The last row is meant to return to single session.
+The estimated SpaRTaCo model has 18 blocks (2 row clusters and 9 column clusters), and the estimation algorithm is run for 3,000 iterations starting from 5 different sets of points. Note that `spe` is an object of class `SpatialExperiment` and can be used directly into the `spartaco` function. In alternative, the following line is equivalent to the previous one.
 
 ```{r, eval = F}
+plan(multisession(workers = 5))
 x <- as.matrix(spe@assays@data$binomial_deviance_residuals)
 coordinates <- spatialCoords(spe)
-results <- spartaco_multirun(data = x, coordinates = coordinates, K = 2, R = 9, 
-                             nstart = 5, max.iter = 3000, mc.cores = 5)
+results <- spartaco_multirun(data = x, coordinates = coordinates, 
+                             K = 2, R = 9, nstart = 5, 
+                             max.iter = 3000, 
+                             verbose = T,
+                             verbose.display.intervals = 100)
+plan(sequential)
 ```
 
 To run SpaRTaCo simultaneously with multiple dimensions, one can use for example the function `parallel::mclapply`. Let us suppose that we evaluate from 7 to 12 column clusters, keeping fixed the number of row clusters. The code that performs this operation is
 
 ```{r, eval = F}
+plan(multisession(workers = 5))
 multiresults <- parallel::mclapply(7:12, function(r)
   spartaco_multirun(data = spe, assay = "binomial_deviance_residuals", K = 2, R = r, 
-                    nstart = 5, max.iter = 3000, mc.cores = 5), mc.cores = length(R.values))
+                    nstart = 5, max.iter = 3000), mc.cores = length(R.values))
 ICL.values <- unlist(lapply(multiresults, function(x) x$ICL))
 ggplot(data.frame(R.values, ICL.values), aes(R.values, ICL.values/1e+6))+geom_point()+
   theme_classic()+ylab("ICL (1e+6)")
@@ -209,3 +221,12 @@ This kind of plot either serves to confirm that our model returns coherent resul
 respectively, for the production and the maintenance of myelin, the covering sheath of the nerve fibers in the White Matter. At the same time, we see that the variabiity of the gene CERCAM is very high, even though the gene selection method of  *Townes et al. (2019)* placed it among the less informative genes. CERCAM
 encodes a cell adhesion protein involved in leukocyte transmigration across the blood-brain barrier
 (Starzyk et al., 2000).
+
+
+### Track the progress of each and every run of spartaco separately
+
+The function `spartaco_multirun` displays a unique progress bar to display the whole estimation process based on `nstart` starting points. If the user is interested in checking each and every estimation process separately, we suggest to perform the following steps:
+
+1. manually create a total of `nstart` working sessions (e.g., multiple `screen` sessions on a UNIX based operating systems);
+2. within each session, open `R`, load the data, run the function `spartaco` and save the results in separate files;
+3. Once that all the estimation procedures are completed, open a unique `R` session and merge the results into a unique `spartaco` object using the function `CombineSpartaco`.
