@@ -16,9 +16,7 @@ spartaco_multirun(
   metropolis.iterations = 150,
   estimate.iterations = 100,
   prob.m = c(0.7, 0.2, 0.1),
-  conv.criterion = list(iterations = 10, epsilon = 1e-04),
-  verbose = T,
-  verbose.display.intervals = 10
+  conv.criterion = list(iterations = 10, epsilon = 1e-04)
 )
 }
 \arguments{
@@ -45,10 +43,6 @@ spartaco_multirun(
 \item{prob.m}{the vector of probabilities assigned to the vector \code{1:length(prob.m)}, determining the number of columns the algorithm attempts to reallocate in a single SE Step.}
 
 \item{conv.criterion}{a list containing the parameters that define a converge criterion (see \strong{Details}).}
-
-\item{verbose}{logical; it \code{TRUE}, it displays the estimation process through a dynamic progress bar.}
-
-\item{verbose.display.intervals}{integer; if \code{verbose == T}, the dynamic progress bar is updated after \code{max.iter/verbose.display.intervals} iterations.}
 }
 \value{
 An object of class \code{spartaco} with the parameter estimates, the clustering labels, the log-likelihood value at each iteration and the data, the ICL, the data matrix and the coordinates matrix, and the clustering uncertainty.
@@ -74,9 +68,8 @@ coordinates <- matrix(runif(2*p), p, 2)
 
 # Set the number of cores to be used for the computations. In this example, we use 3 cores.
 future::plan(future::multisession(workers = 3))
-output <- spartaco(data = x, coordinates = coordinates, K = K, R = R, max.iter = 1000, verbose.display.intervals = 100)
+output <- spartaco_multirun(data = x, coordinates = coordinates, K = K, R = R, max.iter = 1000)
 
-# according to this setup, the progress bar will be updated once every 10 iterations are performed.
 }
 \references{
 Sottosanti, A. and Risso, D. (2021+) Co-clustering of Spatially Resolved Transcriptomic Data \href{https://arxiv.org/abs/2110.04872}{(preprint)}

@@ -20,8 +20,6 @@
 #' @param estimate.iterations the maximum number of iterations within each M Step.
 #' @param prob.m the vector of probabilities assigned to the vector `1:length(prob.m)`, determining the number of columns the algorithm attempts to reallocate in a single SE Step.
 #' @param conv.criterion a list containing the parameters that define a converge criterion (see **Details**).
-#' @param verbose logical; it `TRUE`, it displays the estimation process through a dynamic progress bar.
-#' @param verbose.display.intervals integer; if `verbose == T`, the dynamic progress bar is updated after `max.iter/verbose.display.intervals` iterations.
 #'
 #' @return An object of class `spartaco` with the parameter estimates, the clustering labels, the log-likelihood value at each iteration and the data, the ICL, the data matrix and the coordinates matrix, and the clustering uncertainty.
 #'
@@ -46,9 +44,8 @@
 #'
 #' # Set the number of cores to be used for the computations. In this example, we use 3 cores.
 #' future::plan(future::multisession(workers = 3))
-#' output <- spartaco(data = x, coordinates = coordinates, K = K, R = R, max.iter = 1000, verbose.display.intervals = 100)
+#' output <- spartaco_multirun(data = x, coordinates = coordinates, K = K, R = R, max.iter = 1000)
 #'
-#' # according to this setup, the progress bar will be updated once every 10 iterations are performed.
 
 spartaco_multirun <- function(data,
                      coordinates = NULL,
@@ -61,9 +58,7 @@ spartaco_multirun <- function(data,
                      metropolis.iterations = 150,
                      estimate.iterations = 100,
                      prob.m = c(.7, .2, .1),
-                     conv.criterion = list(iterations = 10, epsilon = 1e-4),
-                     verbose = T,
-                     verbose.display.intervals = 10)
+                     conv.criterion = list(iterations = 10, epsilon = 1e-4))
 {
     if(class(data) == "SpatialExperiment"){
         if(is.numeric(assay)) which.assay <- assay
@@ -75,36 +70,16 @@ spartaco_multirun <- function(data,
         x <- data
     }
 
-    if(verbose){
-        progressr::handlers(global = T)
-        P <- progressr::progressor(along = 1:max.iter)
 
-        results <- future_lapply(1:nstart, FUN = function(l){
-            for(j in 1:verbose.display.intervals){
-                P()
-                if(j == 1) input.values <- NULL else input.values <- s
-                s <- spartaco(data = x, coordinates = coordinates, K = K, R = R, assay = NULL,
-                              input.values = input.values,
-                              Delta.constr = Delta.constr, max.iter = max.iter/verbose.display.intervals,
-                              metropolis.iterations = metropolis.iterations,
-                              estimate.iterations = estimate.iterations,
-                              prob.m = prob.m, conv.criterion = conv.criterion,
-                              verbose = F, save.options = NULL)
-                }
-            s
-        }
-        )
-    }
-    if(!verbose){
-        results <- future_lapply(1:nstart, FUN = function(l)
-            spartaco(data = x, coordinates = coordinates, K = K, R = R, assay = NULL,
-                          Delta.constr = Delta.constr, max.iter = max.iter,
-                          metropolis.iterations = metropolis.iterations,
-                          estimate.iterations = estimate.iterations,
-                          prob.m = prob.m, conv.criterion = conv.criterion,
-                          verbose = F, save.options = NULL)
-        )
-    }
+    results <- future_lapply(1:nstart, FUN = function(l)
+        spartaco(data = x, coordinates = coordinates, K = K, R = R, assay = NULL,
+                      Delta.constr = Delta.constr, max.iter = max.iter,
+                      metropolis.iterations = metropolis.iterations,
+                      estimate.iterations = estimate.iterations,
+                      prob.m = prob.m, conv.criterion = conv.criterion,
+                      verbose = F, save.options = NULL)
+    )
+
 
     output <- CombineSpartaco(results)
     return(output)
