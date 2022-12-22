@@ -17,8 +17,7 @@
 #' @param prob.m the vector of probabilities assigned to the vector `1:length(prob.m)`, determining the number of columns the algorithm attempts to reallocate in a single SE Step.
 #' @param input.values the starting points of the estimation process (see **Details**). If passed, the values of `K` and `R` are taken from it. The output of a previous model estimation can be passed here.
 #' @param conv.criterion a list containing the parameters that define a converge criterion (see **Details**).
-#' @param verbose different ways to display the on-going estimation process (see **Details**).
-#' @param verbose.parallel.label an additional label that is used to display the on-going estimation process when `verbose == "parallel"`.
+#' @param verbose if `TRUE`, it displays the on-going estimation process.
 #' @param save.options a list for specifying the saving parameters (see **Details**).
 #' @param seed set the interval seed of the function.
 #'
@@ -43,8 +42,8 @@
 #' The function allows also to save the results even if the estimation is not completed. To do so, `save.options` receives a list of two parameters:
 #' `after` gives the number of iterations after which the results are saved, `file.name` contains the path where the results are saved.
 #'
-#' If `verbose == "full"`, the on-going estimation procedure is displayed. If `verbose == "progress"`, a dynamic progress bar will display the percentage of iterations completed.
-#' If `verbose == F`, then nothing is displayed in console.
+# If `verbose == "full"`, the on-going estimation procedure is displayed. If `verbose == "progress"`, a dynamic progress bar will display the percentage of iterations completed.
+# If `verbose == F`, then nothing is displayed in console.
 
 # \deqn{p(x) = \frac{\lambda^x e^{-\lambda}}{x!}}{%p(x) = \lambda^x exp(-\lambda)/x!} for \eqn{x = 0, 1, 2, \ldots}
 
@@ -81,7 +80,6 @@ spartaco <- function(data,
                      input.values = NULL,
                      conv.criterion = list(iterations = 10, epsilon = 1e-4),
                      verbose = T,
-                     verbose.parallel.label = NULL,
                      save.options = NULL,
                      seed = NULL
                      ) {
@@ -114,6 +112,5 @@ spartaco <- function(data,
          conv.criterion = conv.criterion,
          input.values = input.values,
          save.options = save.options,
-         verbose = verbose,
-         verbose.parallel.label = verbose.parallel.label)
+         verbose = verbose)
 }

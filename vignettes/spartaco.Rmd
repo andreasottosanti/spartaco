@@ -15,7 +15,7 @@ knitr::opts_chunk$set(
 )
 ```
 
-In this vignette, we show how to use  the functions of the R package `spartaco` to fit the SpaRTaCo co-clustering model ([*Sottosanti and Risso, 2021+*](https://arxiv.org/pdf/2110.04872.pdf)) on 10X Visium spatial experiments. We consider one of the human dorsolateral prefrontal cortex tissue samples contained into the `R` package [spatialLIBD](http://spatial.libd.org/spatialLIBD/) (click the link to have more details about the data). The following analysis is extracted from  Sottosanti and Risso's article. Note that, due to the high computational costs that the estimation of SpaRTaCo requires, most of the code has  been run locally, and the results uploaded.
+In this vignette, we show how to use  the functions of the R package `spartaco` to fit the SpaRTaCo co-clustering model ([*Sottosanti and Risso, 2022*](https://arxiv.org/pdf/2110.04872.pdf)) on 10X Visium spatial experiments. We consider one of the human dorsolateral prefrontal cortex tissue samples contained into the `R` package [spatialLIBD](http://spatial.libd.org/spatialLIBD/) (click the link to have more details about the data). The following analysis is extracted from  Sottosanti and Risso's article. Note that, due to the high computational costs that the estimation of SpaRTaCo requires, most of the code has  been run locally, and the results uploaded.
 
 
 ```{r, echo = F}
@@ -124,12 +124,11 @@ plan(multisession(workers = 5))
 results <- spartaco_multirun(data = spe, assay = "binomial_deviance_residuals", K = 2, 
                              R = 9, 
                              nstart = 5, max.iter = 3000,
-                             verbose = T,
-                             verbose.display.intervals = 100)
+                             verbose = T)
 plan(sequential)
 ```
  
-With the above setup, a dynamic progress bar will appear on the console to show the on-going estimation process. The bar will be updated once every 30 iterations (given by 3000/100). The last row is meant to return to single session.
+The last row is meant to return to single session.
 The estimated SpaRTaCo model has 18 blocks (2 row clusters and 9 column clusters), and the estimation algorithm is run for 3,000 iterations starting from 5 different sets of points. Note that `spe` is an object of class `SpatialExperiment` and can be used directly into the `spartaco` function. In alternative, the following line is equivalent to the previous one.
 
 ```{r, eval = F}
@@ -139,8 +138,7 @@ coordinates <- spatialCoords(spe)
 results <- spartaco_multirun(data = x, coordinates = coordinates, 
                              K = 2, R = 9, nstart = 5, 
                              max.iter = 3000, 
-                             verbose = T,
-                             verbose.display.intervals = 100)
+                             verbose = T)
 plan(sequential)
 ```
 
@@ -225,8 +223,8 @@ encodes a cell adhesion protein involved in leukocyte transmigration across the 
 
 ### Track the progress of each and every SpaRTaCo run separately
 
-The function `spartaco_multirun` displays a unique progress bar to display the whole estimation process based on `nstart` starting points. If the user is interested in checking each and every estimation process separately, we suggest to perform the following steps:
+The function `spartaco_multirun` does not display any progress indicator about the whole estimation process. If the user is interested in checking each and every estimation process separately, we suggest to perform the following steps:
 
 1. manually create a total of `nstart` working sessions (e.g., multiple `screen` sessions on a UNIX based operating systems);
 2. within each session, open `R`, load the data, run the function `spartaco` and save the results in separate files;
-3. Once that all the estimation procedures are completed, open a unique `R` session and merge the results into a unique `spartaco` object using the function `CombineSpartaco`.
+3. Once all the estimation procedures are completed, open a unique `R` session and merge the results into a unique `spartaco` object using the function `CombineSpartaco`.
