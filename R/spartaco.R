@@ -48,7 +48,7 @@
 # \deqn{p(x) = \frac{\lambda^x e^{-\lambda}}{x!}}{%p(x) = \lambda^x exp(-\lambda)/x!} for \eqn{x = 0, 1, 2, \ldots}
 
 #' @references
-#' Sottosanti, A. and Risso, D. (2021+) Co-clustering of Spatially Resolved Transcriptomic Data [(preprint)](https://arxiv.org/abs/2110.04872)
+#' Sottosanti, A. and Risso, D. (2023) Co-clustering of Spatially Resolved Transcriptomic Data. *The Annals of Applied Statistics* 17(2): 1444-1468. [(link)](https://projecteuclid.org/journals/annals-of-applied-statistics/volume-17/issue-2/Co-clustering-of-spatially-resolved-transcriptomic-data/10.1214/22-AOAS1677.short)
 
 #' @examples
 #' library(spartaco)
