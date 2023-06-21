@@ -84,7 +84,7 @@ spartaco <- function(data,
                      seed = NULL
                      ) {
 
-    if(class(data) == "SpatialExperiment"){
+    if(class(data)[1] == "SpatialExperiment"){
         if(is.numeric(assay)) which.assay <- assay
             else which.assay <- which(names(data@assays@data) == assay)
         x <- as.matrix(data@assays@data[[which.assay]])
