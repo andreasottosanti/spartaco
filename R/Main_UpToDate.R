@@ -3,10 +3,11 @@ main <- function(x, coordinates,
                  R,
                  Delta.constr = 10,
                  max.iter = 10^3,
+                 constant.alpha.beta = F,
+                 column.allocation.algorithm = "CEM",
                  metropolis.iterations = 150,
                  estimate.iterations = 10,
                  prob.m = c(.7, .2, .1),
-                 constant.alpha.beta = F,
                  conv.criterion = NULL,
                  input.values = NULL,
                  save.options = NULL,
@@ -114,31 +115,34 @@ main <- function(x, coordinates,
 
         # ---SE Step
         if(verbose == T) cat("SE Step/")
-        cur.ds <- tryCatch({
-            MetropolisAllocation(x = x, Uglob = Uglob, Dglob = Dglob,
-                                           Cs = cur.Cs, Ds = cur.Ds, Dist = Dist, Mu = cur.mu, Tau = cur.tau, Xi = cur.xi, Alpha = cur.alpha, Beta = cur.beta, Phi = cur.phi,
-                                           maxit = metropolis.iterations,
-#                                 rate.m = 1/(i-1)+.5,
-                                 prob.m = prob.m,
-                                 min.obs = 10)
-            },
-            error = function(cond){
-                message(cond)
-                llv <- matrix(0, K, R)
-                sapply(goodR, function(r){
-                    sapply(goodK, function(k){
-                        llv[k,r] <- logL.Cocluster(x = x[cur.Cs == k, cur.Ds == r],
-                                                            Mu = cur.mu[k,r],
-                                                            Tau = cur.tau[k,r],
-                                                            Xi = cur.xi[k,r],
-                                                            Alpha = cur.alpha[k,r],
-                                                            Beta = cur.beta[k,r],
-                                                            U = Uglob[[r]],
-                                                            d = Dglob[cur.Ds == r])
+        if(column.allocation.algorithm == "SE")
+            {cur.ds <- tryCatch({
+                MetropolisAllocation(x = x, Uglob = Uglob, Dglob = Dglob,
+                                               Cs = cur.Cs, Ds = cur.Ds, Dist = Dist, Mu = cur.mu, Tau = cur.tau, Xi = cur.xi, Alpha = cur.alpha, Beta = cur.beta, Phi = cur.phi,
+                                               maxit = metropolis.iterations,
+                                     prob.m = prob.m,
+                                     min.obs = 10)
+                },
+                error = function(cond){
+                    message(cond)
+                    llv <- matrix(0, K, R)
+                    sapply(goodR, function(r){
+                        sapply(goodK, function(k){
+                            llv[k,r] <- logL.Cocluster(x = x[cur.Cs == k, cur.Ds == r],
+                                                                Mu = cur.mu[k,r],
+                                                                Tau = cur.tau[k,r],
+                                                                Xi = cur.xi[k,r],
+                                                                Alpha = cur.alpha[k,r],
+                                                                Beta = cur.beta[k,r],
+                                                                U = Uglob[[r]],
+                                                                d = Dglob[cur.Ds == r])
+                        })
                     })
-                })
-                return(list(Ds = cur.Ds, Uglob = Uglob, Dglob = Dglob, logL.values = llv, accepted = 0))
-            })
+                    return(list(Ds = cur.Ds, Uglob = Uglob, Dglob = Dglob, logL.values = llv, accepted = 0))
+                })} else
+                {
+                    cur.ds <- GibbsAllocation(x = x, Cs = cur.Cs, Ds = cur.Ds, Uglob = Uglob, Dglob = Dglob, Dist = Dist, Mu = cur.mu, Tau = cur.tau, Xi = cur.xi, Alpha = cur.alpha, Beta = cur.beta, Phi = cur.phi)
+                }
         cur.Ds <- cur.ds$Ds
         Uglob <- cur.ds$Uglob
         Dglob <- cur.ds$Dglob

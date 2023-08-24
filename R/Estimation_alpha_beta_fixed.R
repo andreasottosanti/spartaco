@@ -97,11 +97,11 @@ Estimation.alpha.beta.fixed <- function(alpha0, beta0, x,
     optimization <- optim(c(alpha0, beta0), function(param)
         {
         if(any(param < 0)) return(-Inf)
-            value <- 0
-            for(k in goodK){
-                for(r in goodR){
-                    value <- value -
-                        logL.Cocluster(x = x[Cs == k, Ds == r],
+        value <- 0
+        for(k in goodK){
+            for(r in goodR){
+                value <- value -
+                    logL.Cocluster(x = x[Cs == k, Ds == r],
                                        Mu = mu[k,r],
                                        Tau = tau[k,r],
                                        Xi = xi[k,r],
@@ -110,7 +110,7 @@ Estimation.alpha.beta.fixed <- function(alpha0, beta0, x,
                                        U = U[[r]], d = d[Ds == r])
                 }
             }
-            value
+        value
     })
     optimization$par
 }
