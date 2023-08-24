@@ -92,8 +92,8 @@ Estimation.alpha.beta.fixed <- function(alpha0, beta0, x,
                                       xi){
     K <- nrow(mu)
     R <- ncol(mu)
-    goodK <- sort(unique(cur.Cs))
-    goodR <- sort(unique(cur.Ds))
+    goodK <- sort(unique(Cs))
+    goodR <- sort(unique(Ds))
     optimization <- optim(c(alpha0, beta0), function(param)
         {
         if(any(param < 0)) return(-Inf)
