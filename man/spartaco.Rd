@@ -12,6 +12,7 @@ spartaco(
   R = NULL,
   Delta.constr = 10,
   constant.alpha.beta = F,
+  column.allocation.algorithm = "SE",
   max.iter = 1000,
   metropolis.iterations = 150,
   estimate.iterations = 100,
@@ -37,6 +38,8 @@ spartaco(
 \item{Delta.constr}{the constraint on the Delta matrix (default is 10; see \strong{Details}).}
 
 \item{constant.alpha.beta}{if \code{T}, the estimate of \code{alpha} and \code{beta} is unique for every co-cluster.}
+
+\item{column.allocation.algorithm}{the algorithm used for clustering the spots. if \code{SE}, it uses the Metropolis Hastings algorithm, if \code{CEM} it uses the conditional maximization.}
 
 \item{max.iter}{the maximum number of iterations the estimation algorithm is run.}
 
