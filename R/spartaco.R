@@ -12,6 +12,7 @@
 #' @param R the number of column clusters (only when `input.values == NULL`).
 #' @param Delta.constr the constraint on the Delta matrix (default is 10; see **Details**).
 #' @param max.iter the maximum number of iterations the estimation algorithm is run.
+#' @param constant.alpha.beta if `T`, the estimate of `alpha` and `beta` is unique for every co-cluster.
 #' @param metropolis.iterations the number of iterations within each SE Step.
 #' @param estimate.iterations the maximum number of iterations within each M Step.
 #' @param prob.m the vector of probabilities assigned to the vector `1:length(prob.m)`, determining the number of columns the algorithm attempts to reallocate in a single SE Step.
@@ -73,6 +74,7 @@ spartaco <- function(data,
                      K = NULL,
                      R = NULL,
                      Delta.constr = 10,
+                     constant.alpha.beta = F,
                      max.iter = 1000,
                      metropolis.iterations = 150,
                      estimate.iterations = 100,
@@ -105,6 +107,7 @@ spartaco <- function(data,
          coordinates = coordinates,
          K = K, R = R,
          Delta.constr = Delta.constr,
+         constant.alpha.beta = constant.alpha.beta,
          max.iter = max.iter,
          metropolis.iterations = metropolis.iterations,
          estimate.iterations = estimate.iterations,

@@ -6,6 +6,7 @@ main <- function(x, coordinates,
                  metropolis.iterations = 150,
                  estimate.iterations = 10,
                  prob.m = c(.7, .2, .1),
+                 constant.alpha.beta = F,
                  conv.criterion = NULL,
                  input.values = NULL,
                  save.options = NULL,
@@ -57,26 +58,59 @@ main <- function(x, coordinates,
         if(verbose == T) cat("M Step/")
         goodK <- sort(unique(cur.Cs))
         goodR <- sort(unique(cur.Ds))
-        sapply(goodR, function(r){
-            traceDelta_r <- Delta.constr * sum(cur.Ds == r)
-            sapply(goodK, function(k){
-                estimation.parameters <- Estimate.Cocluster.Parameters.marginal.constraint.trace(x = x[cur.Cs == k, cur.Ds == r],
-                                                                                                 traceDelta = traceDelta_r,
-                                                                                                 U = Uglob[[r]],
-                                                                                                 d = Dglob[cur.Ds == r],
-                                                                                                 mu0 = cur.mu[k,r],
-                                                                                                 alpha0 = cur.alpha[k,r],
-                                                                                                 beta0 = cur.beta[k,r],
-                                                                                                 tau0 = cur.tau[k,r],
-                                                                                                 maxit = estimate.iterations
-                                                                                                 )
-                cur.mu[k,r] <<- estimation.parameters$mu
-                cur.tau[k,r] <<- estimation.parameters$tau
-                cur.xi[k,r] <<- estimation.parameters$xi
-                cur.alpha[k,r] <<- estimation.parameters$alpha
-                cur.beta[k,r] <<- estimation.parameters$beta
+        if(!constant.alpha.beta){
+            sapply(goodR, function(r){
+                traceDelta_r <- Delta.constr * sum(cur.Ds == r)
+                sapply(goodK, function(k){
+                    estimation.parameters <- Estimate.Cocluster.Parameters.marginal.constraint.trace(x = x[cur.Cs == k, cur.Ds == r],
+                                                                                                     traceDelta = traceDelta_r,
+                                                                                                     U = Uglob[[r]],
+                                                                                                     d = Dglob[cur.Ds == r],
+                                                                                                     mu0 = cur.mu[k,r],
+                                                                                                     alpha0 = cur.alpha[k,r],
+                                                                                                     beta0 = cur.beta[k,r],
+                                                                                                     tau0 = cur.tau[k,r],
+                                                                                                     maxit = estimate.iterations
+                                                                                                     )
+                    cur.mu[k,r] <<- estimation.parameters$mu
+                    cur.tau[k,r] <<- estimation.parameters$tau
+                    cur.xi[k,r] <<- estimation.parameters$xi
+                    cur.alpha[k,r] <<- estimation.parameters$alpha
+                    cur.beta[k,r] <<- estimation.parameters$beta
+                })
             })
-        })
+        } else {
+            sapply(goodR, function(r){
+                traceDelta_r <- Delta.constr * sum(cur.Ds == r)
+                sapply(goodK, function(k){
+                    estimation.parameters <- Estimate.Cocluster.Parameters.marginal.fixed.alpha.beta(x = x[cur.Cs == k, cur.Ds == r],
+                                                                                                     traceDelta = traceDelta_r,
+                                                                                                     U = Uglob[[r]],
+                                                                                                     d = Dglob[cur.Ds == r],
+                                                                                                     mu0 = cur.mu[k,r],
+                                                                                                     alpha0 = cur.alpha[k,r],
+                                                                                                     beta0 = cur.beta[k,r],
+                                                                                                     tau0 = cur.tau[k,r],
+                                                                                                     maxit = estimate.iterations
+                    )
+                    cur.mu[k,r] <<- estimation.parameters$mu
+                    cur.tau[k,r] <<- estimation.parameters$tau
+                    cur.xi[k,r] <<- estimation.parameters$xi
+                })
+            })
+            alpha.beta <- Estimation.alpha.beta.fixed(alpha0 = unique(cur.alpha)[1,1],
+                                                      beta0 = unique(cur.beta)[1,1],
+                                                      x = x,
+                                                      U = Uglob,
+                                                      d = Dglob,
+                                                      mu = cur.mu,
+                                                      tau= cur.tau,
+                                                      xi = cur.xi,
+                                                      Cs = cur.Cs,
+                                                      Ds = cur.Ds)
+            cur.alpha <- matrix(alpha.beta[1], K, R)
+            cur.beta <- matrix(alpha.beta[2], K, R)
+        }
 
         # ---SE Step
         if(verbose == T) cat("SE Step/")
@@ -118,21 +152,34 @@ main <- function(x, coordinates,
         sapply(goodR, function(r){
             traceDelta_r <- Delta.constr * sum(cur.Ds == r)
             sapply(goodK, function(k){
-                estimation.parameters <- Estimate.Cocluster.Parameters.marginal.constraint.trace(x = x[cur.Cs == k, cur.Ds == r],
-                                                                                                 traceDelta = traceDelta_r,
-                                                                                                 U = Uglob[[r]],
-                                                                                                 d = Dglob[cur.Ds == r],
-                                                                                                 mu0 = cur.mu[k,r],
-                                                                                                 alpha0 = cur.alpha[k,r],
-                                                                                                 beta0 = cur.beta[k,r],
-                                                                                                 tau0 = cur.tau[k,r],
-                                                                                                 maxit = estimate.iterations
-                                                                                                 )
+                if(!constant.alpha.beta){
+                    estimation.parameters <- Estimate.Cocluster.Parameters.marginal.constraint.trace(x = x[cur.Cs == k, cur.Ds == r],
+                                                                                                     traceDelta = traceDelta_r,
+                                                                                                     U = Uglob[[r]],
+                                                                                                     d = Dglob[cur.Ds == r],
+                                                                                                     mu0 = cur.mu[k,r],
+                                                                                                     alpha0 = cur.alpha[k,r],
+                                                                                                     beta0 = cur.beta[k,r],
+                                                                                                     tau0 = cur.tau[k,r],
+                                                                                                     maxit = estimate.iterations
+                    )
+                    cur.alpha[k,r] <<- estimation.parameters$alpha
+                    cur.beta[k,r] <<- estimation.parameters$beta
+                } else {
+                    estimation.parameters <- Estimate.Cocluster.Parameters.marginal.constraint.trace(x = x[cur.Cs == k, cur.Ds == r],
+                                                                                                     traceDelta = traceDelta_r,
+                                                                                                     U = Uglob[[r]],
+                                                                                                     d = Dglob[cur.Ds == r],
+                                                                                                     mu0 = cur.mu[k,r],
+                                                                                                     alpha0 = cur.alpha[k,r],
+                                                                                                     beta0 = cur.beta[k,r],
+                                                                                                     tau0 = cur.tau[k,r],
+                                                                                                     maxit = estimate.iterations
+                    )
+                }
                 cur.mu[k,r] <<- estimation.parameters$mu
                 cur.tau[k,r] <<- estimation.parameters$tau
                 cur.xi[k,r] <<- estimation.parameters$xi
-                cur.alpha[k,r] <<- estimation.parameters$alpha
-                cur.beta[k,r] <<- estimation.parameters$beta
             })
             cur.phi[r] <<- updatePhi_r_marginal(x = x[,cur.Ds == r],
                                                 Cs = cur.Cs,
@@ -147,6 +194,20 @@ main <- function(x, coordinates,
             Uglob[[r]] <<- EigenK$vec
             Dglob[cur.Ds == r] <<- EigenK$val
         })
+        if(constant.alpha.beta){
+            alpha.beta <- Estimation.alpha.beta.fixed(alpha0 = unique(cur.alpha),
+                                                      beta0 = unique(cur.beta),
+                                                      x = x,
+                                                      U = Uglob,
+                                                      d = Dglob,
+                                                      mu = cur.mu,
+                                                      tau= cur.tau,
+                                                      xi = cur.xi,
+                                                      Cs = cur.Cs,
+                                                      Ds = cur.Ds)
+            cur.alpha <- matrix(alpha.beta[1], K, R)
+            cur.beta <- matrix(alpha.beta[2], K, R)
+        }
 
         # ---CE Step
         if(verbose == T) cat("CE Step/")

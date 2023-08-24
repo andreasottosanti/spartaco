@@ -11,6 +11,7 @@ spartaco(
   K = NULL,
   R = NULL,
   Delta.constr = 10,
+  constant.alpha.beta = F,
   max.iter = 1000,
   metropolis.iterations = 150,
   estimate.iterations = 100,
@@ -34,6 +35,8 @@ spartaco(
 \item{R}{the number of column clusters (only when \code{input.values == NULL}).}
 
 \item{Delta.constr}{the constraint on the Delta matrix (default is 10; see \strong{Details}).}
+
+\item{constant.alpha.beta}{if \code{T}, the estimate of \code{alpha} and \code{beta} is unique for every co-cluster.}
 
 \item{max.iter}{the maximum number of iterations the estimation algorithm is run.}
 
@@ -97,5 +100,5 @@ output <- spartaco(data = spe, assay = 2, K = K, R = R)
 output2 <- spartaco(data = x, coordinates = coordinates, input.val = output)
 }
 \references{
-Sottosanti, A. and Risso, D. (2021+) Co-clustering of Spatially Resolved Transcriptomic Data \href{https://arxiv.org/abs/2110.04872}{(preprint)}
+Sottosanti, A. and Risso, D. (2023) Co-clustering of Spatially Resolved Transcriptomic Data. \emph{The Annals of Applied Statistics} 17(2): 1444-1468. \href{https://projecteuclid.org/journals/annals-of-applied-statistics/volume-17/issue-2/Co-clustering-of-spatially-resolved-transcriptomic-data/10.1214/22-AOAS1677.short}{(link)}
 }
