@@ -3,7 +3,7 @@
 
 # **SPA**tially **R**esolved **T**r**A**nscriptomics **CO**-clustering (SpaRTaCo)
 
-by A. Sottosanti, D. Righelli and D. Risso
+by A. Sottosanti and D. Risso
 
 <!-- badges: start -->
 
